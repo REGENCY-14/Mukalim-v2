@@ -2,17 +2,14 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import TopNavBar from "@/components/site/TopNavBar";
-import Footer from "@/components/site/Footer";
 import SignInForm from "@/components/site/SignInForm";
-import AnimatedBackground from "@/components/AnimatedBackground";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { ui } from "@/lib/i18n/translations";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
-import { staggerContainer, staggerItem } from "@/lib/animations";
+import { fadeInUp, fadeInDown } from "@/lib/animations";
 
 export default function SignInPageContent() {
   const { locale } = useLocale();
@@ -33,45 +30,62 @@ export default function SignInPageContent() {
   return (
     <>
       <TopNavBar />
-      <main className="flex flex-1 flex-col pt-[88px]">
-        <section className="relative flex flex-1 items-center justify-center overflow-hidden bg-brand-cream px-4 py-16 sm:px-6 lg:py-24">
-          <AnimatedBackground />
+      {/* Full-height split screen (no footer) — an editorial photo panel
+          carries the brand instead of a generic centered-card + blurred-blob
+          layout, so this page reads as Mukalim, not a template. */}
+      <main className="grid min-h-screen pt-[88px] lg:grid-cols-2">
+        {/* Photo panel */}
+        <div className="relative hidden overflow-hidden bg-brand-ink lg:block">
+          <Image
+            src="/mukalim/trust.jpg"
+            alt="An artisan grinding spices by hand with a traditional mortar and pestle"
+            fill
+            sizes="50vw"
+            priority
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-brand-brown/25 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/10 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-4 p-10 xl:p-14">
+            <span className="h-px w-12 bg-brand-gold" />
+            <motion.p
+              initial="hidden"
+              animate="visible"
+              variants={fadeInUp}
+              className="max-w-md font-serif text-2xl leading-snug font-medium text-white xl:text-[28px]"
+            >
+              &ldquo;{t.quote}&rdquo;
+            </motion.p>
+            <p className="text-xs font-medium tracking-[2px] text-white/60 uppercase">
+              — {t.quoteAttribution}
+            </p>
+          </div>
+        </div>
+
+        {/* Form panel */}
+        <div className="flex items-center justify-center bg-brand-cream px-6 py-16 sm:px-10 lg:px-16 xl:px-20">
           <motion.div
-            variants={staggerContainer}
             initial="hidden"
             animate="visible"
-            className="relative z-10 flex w-full max-w-md flex-col items-center gap-8"
+            variants={fadeInDown}
+            className="w-full max-w-sm"
           >
-            <motion.div variants={staggerItem} className="flex flex-col items-center gap-4 text-center">
-              <Link href="/" className="flex items-center gap-3">
-                <span className="relative size-10 overflow-hidden rounded-md">
-                  <Image
-                    src="/mukalim/logo.png"
-                    alt="Mukalim brand logo"
-                    fill
-                    sizes="40px"
-                    className="object-cover"
-                  />
-                </span>
-                <span className="font-serif text-2xl font-bold tracking-tight text-brand-ink">
-                  MUKALIM
-                </span>
-              </Link>
-              <div className="flex flex-col gap-2">
-                <h1 className="font-serif text-3xl font-bold tracking-tight text-brand-brown sm:text-4xl">
-                  {t.welcomeBack}
-                </h1>
-                <p className="max-w-sm text-base leading-relaxed text-brand-brown-deep">
-                  {isAdminContext ? t.adminSubtext : t.subtext}
-                </p>
-              </div>
-            </motion.div>
+            <span className="text-xs font-semibold tracking-[2.5px] text-brand-gold-deep uppercase">
+              {t.eyebrow}
+            </span>
+            <h1 className="mt-3 font-serif text-4xl font-bold tracking-tight text-brand-ink sm:text-[42px]">
+              {t.welcomeBack}
+            </h1>
+            <p className="mt-3 max-w-sm text-base leading-relaxed text-brand-brown-deep">
+              {isAdminContext ? t.adminSubtext : t.subtext}
+            </p>
 
-            <SignInForm />
+            <div className="mt-10">
+              <SignInForm />
+            </div>
           </motion.div>
-        </section>
+        </div>
       </main>
-      <Footer />
     </>
   );
 }
