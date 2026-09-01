@@ -29,7 +29,7 @@ export default function AnimatedBackground() {
   const blobs = [
     {
       className:
-        "absolute -top-24 -left-24 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-foreground/10 blur-3xl",
+        "absolute -top-24 -left-24 h-72 w-72 sm:h-96 sm:w-96 rounded-full bg-brand-gold/10 blur-3xl",
       animate: shouldReduceMotion
         ? undefined
         : { x: [0, 30, -10, 0], y: [0, 20, -20, 0], scale: [1, 1.08, 0.96, 1] },
@@ -37,7 +37,7 @@ export default function AnimatedBackground() {
     },
     {
       className:
-        "absolute top-1/3 -right-16 h-64 w-64 sm:h-80 sm:w-80 rounded-full bg-foreground/[0.07] blur-3xl",
+        "absolute top-1/3 -right-16 h-64 w-64 sm:h-80 sm:w-80 rounded-full bg-brand-rust/[0.07] blur-3xl",
       animate: shouldReduceMotion
         ? undefined
         : { x: [0, -25, 15, 0], y: [0, -15, 25, 0], rotate: [0, 15, -10, 0] },
@@ -45,7 +45,7 @@ export default function AnimatedBackground() {
     },
     {
       className:
-        "absolute bottom-0 left-1/4 h-56 w-56 sm:h-72 sm:w-72 rounded-full bg-foreground/[0.06] blur-3xl",
+        "absolute bottom-0 left-1/4 h-56 w-56 sm:h-72 sm:w-72 rounded-full bg-brand-gold-deep/[0.06] blur-3xl",
       animate: shouldReduceMotion
         ? undefined
         : { x: [0, 15, -20, 0], y: [0, -20, 10, 0], scale: [1, 0.94, 1.06, 1] },

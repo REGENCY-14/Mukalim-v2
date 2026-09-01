@@ -1,26 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fef9f1;
+  --foreground: #1d1c17;
+
+  /* Mukalim brand palette — single source of truth for the site's colors.
+     Referenced via Tailwind utilities like `bg-brand-cream` / `text-brand-brown`. */
+  --color-brand-cream: #fef9f1;
+  --color-brand-cream-alt: #f8f3eb;
+  --color-brand-sand: #f2ede5;
+  --color-brand-off-white: #e7e2da;
+  --color-brand-line: #d3c4b0;
+  --color-brand-brown: #6b3a1f;
+  --color-brand-brown-deep: #4f4536;
+  --color-brand-ink: #1d1c17;
+  --color-brand-muted: #827563;
+  --color-brand-gold: #e1a93c;
+  --color-brand-gold-soft: #f7bd4e;
+  --color-brand-gold-deep: #7d5800;
+  --color-brand-rust: #a23f17;
+  --color-brand-footer: #822800;
+  --color-brand-banner: #ece8e0;
+
+  /* Admin dashboard palette (src/app/admin). Distinct from the public-site
+     tokens above by design brief — reuses brand-brown/brand-gold where the
+     hex values are identical, adds its own cream/terracotta/green/grey. */
+  --color-admin-cream: #fbf6ee;
+  --color-admin-terracotta: #c1552c;
+  --color-admin-green: #4b6b3a;
+  --color-admin-warm-grey: #8a7a6d;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand-cream: var(--color-brand-cream);
+  --color-brand-cream-alt: var(--color-brand-cream-alt);
+  --color-brand-sand: var(--color-brand-sand);
+  --color-brand-off-white: var(--color-brand-off-white);
+  --color-brand-line: var(--color-brand-line);
+  --color-brand-brown: var(--color-brand-brown);
+  --color-brand-brown-deep: var(--color-brand-brown-deep);
+  --color-brand-ink: var(--color-brand-ink);
+  --color-brand-muted: var(--color-brand-muted);
+  --color-brand-gold: var(--color-brand-gold);
+  --color-brand-gold-soft: var(--color-brand-gold-soft);
+  --color-brand-gold-deep: var(--color-brand-gold-deep);
+  --color-brand-rust: var(--color-brand-rust);
+  --color-brand-footer: var(--color-brand-footer);
+  --color-brand-banner: var(--color-brand-banner);
+
+  --color-admin-cream: var(--color-admin-cream);
+  --color-admin-terracotta: var(--color-admin-terracotta);
+  --color-admin-green: var(--color-admin-green);
+  --color-admin-warm-grey: var(--color-admin-warm-grey);
+
+  --font-sans: var(--font-work-sans);
+  --font-serif: var(--font-playfair);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
