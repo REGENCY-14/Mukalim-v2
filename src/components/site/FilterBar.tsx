@@ -49,6 +49,11 @@ interface FilterDropdownProps {
   value: string;
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
+  /** Which side of the trigger the panel's edge is pinned to — "left"
+   *  (opens rightward) for a dropdown near the left of its row, "right"
+   *  (opens leftward) for one near the right edge, so the fixed-width
+   *  panel never runs off the viewport. Default: "left". */
+  align?: "left" | "right";
 }
 
 /** A fully custom dropdown — button trigger + animated menu — instead of a
@@ -56,7 +61,7 @@ interface FilterDropdownProps {
  * its opened list is always the plain OS/browser popup; this matches the
  * bespoke trigger+panel pattern already used for the nav's language
  * switcher, so the open panel is brand-styled too. */
-function FilterDropdown({ id, ariaLabel, value, options, onChange }: FilterDropdownProps) {
+function FilterDropdown({ id, ariaLabel, value, options, onChange, align = "left" }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => setOpen(false));
   const selected = options.find((option) => option.value === value) ?? options[0];
@@ -87,7 +92,13 @@ function FilterDropdown({ id, ariaLabel, value, options, onChange }: FilterDropd
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
             transition={microTransition}
-            className="absolute top-[calc(100%+8px)] left-0 z-10 max-h-72 w-52 overflow-y-auto rounded-xl border border-brand-line/30 bg-white py-1.5 shadow-[0_8px_30px_0_rgba(107,58,31,0.15)]"
+            className={`absolute top-[calc(100%+8px)] left-0 z-10 max-h-72 w-52 overflow-y-auto rounded-xl border border-brand-line/30 bg-white py-1.5 shadow-[0_8px_30px_0_rgba(107,58,31,0.15)] ${
+              // The bar itself only spreads its two filter groups apart at
+              // `sm:` (see the `sm:justify-between` on the row below) — below
+              // that it's a flush-left stack, so a "right"-aligned dropdown
+              // must still open left-0 on mobile or it runs off-screen.
+              align === "right" ? "sm:right-0 sm:left-auto" : ""
+            }`}
           >
             {options.map((option) => (
               <li key={option.value} role="option" aria-selected={option.value === value}>
@@ -174,6 +185,7 @@ export default function FilterBar({
           value={sort}
           options={sortOptions}
           onChange={(value) => onSortChange(value as SortOption)}
+          align="right"
         />
       </div>
     </div>
