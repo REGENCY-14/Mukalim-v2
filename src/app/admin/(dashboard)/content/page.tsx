@@ -14,6 +14,7 @@ import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import { ContentStatusBadge } from "@/components/admin/Badge";
 import LanguageDots from "@/components/admin/LanguageDots";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import Select from "@/components/admin/Select";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
@@ -63,10 +64,11 @@ export default function ContentPage() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <select
+        <Select
+          fullWidth={false}
           value={categoryFilter}
           onChange={(event) => setCategoryFilter(event.target.value)}
-          className="rounded-xl border border-brand-line/40 bg-white px-3.5 py-2 text-sm text-brand-brown outline-none focus:border-brand-gold"
+          className="rounded-xl border border-brand-line/40 bg-white py-2 pr-9 pl-3.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
         >
           <option value="all">All Categories</option>
           {categories.map((category) => (
@@ -74,20 +76,22 @@ export default function ContentPage() {
               {category.name.en || category.name.fr}
             </option>
           ))}
-        </select>
-        <select
+        </Select>
+        <Select
+          fullWidth={false}
           value={statusFilter}
           onChange={(event) => setStatusFilter(event.target.value as "all" | ContentStatus)}
-          className="rounded-xl border border-brand-line/40 bg-white px-3.5 py-2 text-sm text-brand-brown outline-none focus:border-brand-gold"
+          className="rounded-xl border border-brand-line/40 bg-white py-2 pr-9 pl-3.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
         >
           <option value="all">All Statuses</option>
           <option value="published">Published</option>
           <option value="draft">Draft</option>
-        </select>
-        <select
+        </Select>
+        <Select
+          fullWidth={false}
           value={languageFilter}
           onChange={(event) => setLanguageFilter(event.target.value as "all" | Language)}
-          className="rounded-xl border border-brand-line/40 bg-white px-3.5 py-2 text-sm text-brand-brown outline-none focus:border-brand-gold"
+          className="rounded-xl border border-brand-line/40 bg-white py-2 pr-9 pl-3.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
         >
           <option value="all">All Languages</option>
           {LANGUAGES.map((lang) => (
@@ -95,7 +99,7 @@ export default function ContentPage() {
               Translated in {lang.label}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-brand-line/30 bg-white shadow-[0_4px_20px_0_rgba(107,58,31,0.06)]">

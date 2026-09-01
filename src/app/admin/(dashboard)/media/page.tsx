@@ -11,6 +11,7 @@ import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import MediaUploadZone from "@/components/admin/MediaUploadZone";
 import MediaDetailPanel from "@/components/admin/MediaDetailPanel";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import Select from "@/components/admin/Select";
 
 function formatBytes(kb: number): string {
   return kb >= 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${kb} KB`;
@@ -100,10 +101,11 @@ export default function MediaPage() {
             className="w-full rounded-xl border border-brand-line/40 bg-white py-2 pr-3 pl-9 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
           />
         </div>
-        <select
+        <Select
+          fullWidth={false}
           value={categoryFilter}
           onChange={(event) => setCategoryFilter(event.target.value)}
-          className="rounded-xl border border-brand-line/40 bg-white px-3.5 py-2 text-sm text-brand-brown outline-none focus:border-brand-gold"
+          className="rounded-xl border border-brand-line/40 bg-white py-2 pr-9 pl-3.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
         >
           <option value="all">All Categories</option>
           {categories.map((category) => (
@@ -111,7 +113,7 @@ export default function MediaPage() {
               {category.name.en || category.name.fr}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

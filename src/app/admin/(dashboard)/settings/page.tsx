@@ -7,6 +7,7 @@ import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
 import { canEdit } from "@/lib/admin/permissions";
 import { LANGUAGES, type AdminSettings, type Language } from "@/lib/admin/types";
 import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Select from "@/components/admin/Select";
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useAdminData();
@@ -59,17 +60,17 @@ export default function SettingsPage() {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-brand-brown">Default Language</label>
-              <select
+              <Select
                 value={form.defaultLanguage}
                 onChange={(event) => setForm((prev) => ({ ...prev, defaultLanguage: event.target.value as Language }))}
-                className={inputClass}
+                className={`${inputClass} pr-9`}
               >
                 {LANGUAGES.map((lang) => (
                   <option key={lang.code} value={lang.code}>
                     {lang.label}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-brand-brown">Contact Email</label>

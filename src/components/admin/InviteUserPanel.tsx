@@ -6,6 +6,7 @@ import { roleLabel } from "@/lib/admin/permissions";
 import { useAdminData } from "@/lib/admin/AdminDataContext";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
 import SlideOver from "./SlideOver";
+import Select from "./Select";
 
 export default function InviteUserPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { addUser } = useAdminData();
@@ -49,17 +50,17 @@ export default function InviteUserPanel({ open, onClose }: { open: boolean; onCl
         </div>
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-brand-brown">Role</label>
-          <select
+          <Select
             value={role}
             onChange={(event) => setRole(event.target.value as AdminRole)}
-            className="w-full rounded-xl border border-brand-line/40 bg-admin-cream px-4 py-2.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
+            className="w-full rounded-xl border border-brand-line/40 bg-admin-cream px-4 py-2.5 pr-9 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
           >
             {ADMIN_ROLES.map((r) => (
               <option key={r} value={r}>
                 {roleLabel(r)}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div className="flex justify-end gap-2 border-t border-brand-line/30 pt-5">

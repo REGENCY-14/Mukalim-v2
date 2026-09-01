@@ -15,7 +15,7 @@ function ChevronDown() {
       viewBox="0 0 10 6"
       fill="none"
       aria-hidden="true"
-      className="pointer-events-none absolute top-1/2 right-0 size-2.5 -translate-y-1/2"
+      className="pointer-events-none absolute top-1/2 right-3 size-2.5 -translate-y-1/2 text-brand-brown-deep/70"
     >
       <path
         d="M1 1l4 4 4-4"
@@ -27,6 +27,12 @@ function ChevronDown() {
     </svg>
   );
 }
+
+/** Shared pill treatment for both filter <select>s — a subtle bordered
+ * chip instead of bare unstyled text, matching the rounded/hover language
+ * the rest of the nav (e.g. the language switcher) already uses. */
+const selectClass =
+  "appearance-none rounded-full border border-brand-line/60 bg-white py-1.5 pr-8 pl-3.5 text-sm text-brand-ink outline-none transition-colors hover:border-brand-brown/40 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20";
 
 interface FilterBarProps {
   tags: string[];
@@ -63,7 +69,7 @@ export default function FilterBar({
             id="filter-by-tag"
             value={selectedTag}
             onChange={(event) => onTagChange(event.target.value)}
-            className="appearance-none rounded-md bg-transparent py-1 pr-5 text-base text-brand-ink outline-none"
+            className={selectClass}
           >
             <option value={ALL_TAGS_VALUE}>{t.allIngredients}</option>
             {tags.map((tag) => (
@@ -84,7 +90,7 @@ export default function FilterBar({
             id="sort-by"
             value={sort}
             onChange={(event) => onSortChange(event.target.value as SortOption)}
-            className="appearance-none rounded-md bg-transparent py-1 pr-5 text-base text-brand-ink outline-none"
+            className={selectClass}
           >
             {(Object.keys(sortLabels) as SortOption[]).map((option) => (
               <option key={option} value={option}>

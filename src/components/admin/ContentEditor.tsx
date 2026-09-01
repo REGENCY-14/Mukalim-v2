@@ -10,6 +10,7 @@ import { useAdminData } from "@/lib/admin/AdminDataContext";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
 import Breadcrumbs from "./Breadcrumbs";
 import LanguageTabs from "./LanguageTabs";
+import Select from "./Select";
 
 interface ContentEditorProps {
   item: AdminContentItem | null;
@@ -125,13 +126,13 @@ export default function ContentEditor({ item }: ContentEditorProps) {
           <div className="flex flex-col gap-4 rounded-2xl border border-brand-line/30 bg-white p-6 shadow-[0_4px_20px_0_rgba(107,58,31,0.06)]">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-brand-brown">Category</label>
-              <select value={categoryId} onChange={(event) => setCategoryId(event.target.value)} className={inputClass}>
+              <Select value={categoryId} onChange={(event) => setCategoryId(event.target.value)} className={`${inputClass} pr-9`}>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name.en || category.name.fr}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             <div className="flex flex-col gap-1.5">
