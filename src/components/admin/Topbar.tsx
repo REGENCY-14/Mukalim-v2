@@ -138,7 +138,15 @@ export default function Topbar({ session, onOpenMobileMenu }: { session: AdminSe
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.97 }}
                 transition={microTransition}
-                className="absolute top-[calc(100%+8px)] right-0 z-10 w-80 overflow-hidden rounded-xl border border-brand-line/40 bg-white shadow-[0_8px_30px_0_rgba(107,58,31,0.15)]"
+                // Below `md:` the topbar is a cramped mobile cluster
+                // (hamburger + role switcher + bell + avatar all in a row —
+                // see the `md:hidden` menu button above), so anchoring a
+                // fixed 320px-wide panel to the bell's own right edge runs
+                // it off the left edge of the screen. Pin it to the
+                // viewport instead on mobile; once there's a real desktop
+                // topbar (`md:`), anchor it to the bell like the other
+                // menus.
+                className="fixed inset-x-4 top-[76px] z-10 overflow-hidden rounded-xl border border-brand-line/40 bg-white shadow-[0_8px_30px_0_rgba(107,58,31,0.15)] md:absolute md:inset-x-auto md:top-[calc(100%+8px)] md:right-0 md:w-80"
               >
                 <p className="border-b border-brand-line/30 px-4 py-3 text-sm font-semibold text-brand-brown">
                   Recent activity
