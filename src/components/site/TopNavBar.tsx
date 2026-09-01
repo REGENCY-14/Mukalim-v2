@@ -49,22 +49,21 @@ export default function TopNavBar() {
       <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-16">
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-3 rounded-md outline-offset-4"
+          className="flex shrink-0 items-center rounded-md outline-offset-4"
           onClick={() => setIsMenuOpen(false)}
         >
-          <span className="relative size-10 overflow-hidden rounded-md">
-            <Image
-              src="/mukalim/logo.png"
-              alt="Mukalim brand logo"
-              fill
-              sizes="40px"
-              className="object-cover"
-              priority
-            />
-          </span>
-          <span className="font-serif text-xl font-bold tracking-tight text-brand-ink sm:text-2xl">
-            MUKALIM
-          </span>
+          {/* The logo image is a full wordmark lockup (icon + "MUKALIM"
+              text), so it's rendered at its native aspect ratio instead of
+              cropped into an icon-sized square — no separate text label
+              needed alongside it. */}
+          <Image
+            src="/mukalim/logo.png"
+            alt="Mukalim"
+            width={178}
+            height={100}
+            className="h-9 w-auto sm:h-10"
+            priority
+          />
         </Link>
 
         <ul className="hidden items-center gap-7 xl:flex">
