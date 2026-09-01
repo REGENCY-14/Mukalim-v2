@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Work_Sans } from "next/font/google";
+import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 import { AdminAuthProvider } from "@/lib/admin/AdminAuthContext";
@@ -11,8 +11,8 @@ const playfair = Playfair_Display({
   weight: ["600", "700"],
 });
 
-const workSans = Work_Sans({
-  variable: "--font-work-sans",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${workSans.variable} h-full antialiased`}
+      className={`${playfair.variable} ${jakarta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-brand-cream text-brand-ink">
         {/* reducedMotion="user" makes every Framer Motion animation in the
