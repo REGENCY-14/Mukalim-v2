@@ -50,7 +50,7 @@ function NavLinks({ role, collapsed, onNavigate }: { role: AdminRole; collapsed:
             title={collapsed ? item.label : undefined}
             className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
               isActive
-                ? "bg-brand-gold/15 text-brand-brown"
+                ? "bg-brand-gold/15 text-admin-cream"
                 : "text-admin-cream/80 hover:bg-white/10 hover:text-admin-cream"
             } ${collapsed ? "justify-center" : ""}`}
           >
