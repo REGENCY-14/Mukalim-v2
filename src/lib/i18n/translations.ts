@@ -63,7 +63,9 @@ export const ui = {
       quickLinks: ["About Us", "Our Process", "Sustainability", "Blog & Recipes"],
       categoriesHeading: "Categories",
       contactHeading: "Contact Info",
-      copyright: "© 2024 MUKALIM. All rights reserved.",
+      // No hardcoded year — Footer.tsx prepends the current year at render
+      // time so this never needs a manual bump.
+      copyright: "MUKALIM. All rights reserved.",
       privacy: "Privacy Policy",
       terms: "Terms of Service",
     },
@@ -155,7 +157,7 @@ export const ui = {
       quickLinks: ["À Propos", "Notre Processus", "Durabilité", "Blog et Recettes"],
       categoriesHeading: "Catégories",
       contactHeading: "Coordonnées",
-      copyright: "© 2024 MUKALIM. Tous droits réservés.",
+      copyright: "MUKALIM. Tous droits réservés.",
       privacy: "Politique de Confidentialité",
       terms: "Conditions d'Utilisation",
     },

@@ -128,7 +128,9 @@ export default function Footer() {
         className="border-t border-white/10"
       >
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-6 sm:flex-row sm:justify-between sm:px-6 lg:px-16">
-          <p className="text-xs text-brand-off-white/60">{t.footer.copyright}</p>
+          <p className="text-xs text-brand-off-white/60">
+            © {new Date().getFullYear()} {t.footer.copyright}
+          </p>
           <div className="flex gap-6">
             <a href="#" className="text-xs text-brand-off-white/60 transition-opacity hover:opacity-100">
               {t.footer.privacy}

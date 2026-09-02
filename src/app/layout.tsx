@@ -29,7 +29,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${playfair.variable} ${jakarta.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-brand-cream text-brand-ink">
+      {/* min-h-dvh (dynamic viewport height), not min-h-full/100vh — on
+          mobile, the browser chrome (address bar) collapsing/expanding
+          after load shrinks or grows the *real* visible viewport, and a
+          100vh-based height doesn't track that, leaving the footer short
+          of the actual bottom edge. dvh does track it, so the flex-col +
+          flex-1 <main> sticky-footer layout below holds on every device. */}
+      <body className="min-h-dvh flex flex-col bg-brand-cream text-brand-ink">
         {/* reducedMotion="user" makes every Framer Motion animation in the
             app collapse transform-based motion (x/y/scale/rotate) to its end
             state for users with `prefers-reduced-motion` set. */}
