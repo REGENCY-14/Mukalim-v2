@@ -104,16 +104,13 @@ export default function MediaPage() {
         <Select
           fullWidth={false}
           value={categoryFilter}
-          onChange={(event) => setCategoryFilter(event.target.value)}
-          className="rounded-xl border border-brand-line/40 bg-white py-2 pr-9 pl-3.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
-        >
-          <option value="all">All Categories</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name.en || category.name.fr}
-            </option>
-          ))}
-        </Select>
+          onChange={setCategoryFilter}
+          options={[
+            { value: "all", label: "All Categories" },
+            ...categories.map((category) => ({ value: category.id, label: category.name.en || category.name.fr })),
+          ]}
+          className="rounded-xl border border-brand-line/40 bg-white px-3.5 py-2 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

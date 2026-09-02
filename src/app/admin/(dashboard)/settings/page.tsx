@@ -62,15 +62,10 @@ export default function SettingsPage() {
               <label className="text-sm font-medium text-brand-brown">Default Language</label>
               <Select
                 value={form.defaultLanguage}
-                onChange={(event) => setForm((prev) => ({ ...prev, defaultLanguage: event.target.value as Language }))}
-                className={`${inputClass} pr-9`}
-              >
-                {LANGUAGES.map((lang) => (
-                  <option key={lang.code} value={lang.code}>
-                    {lang.label}
-                  </option>
-                ))}
-              </Select>
+                onChange={(value) => setForm((prev) => ({ ...prev, defaultLanguage: value as Language }))}
+                options={LANGUAGES.map((lang) => ({ value: lang.code, label: lang.label }))}
+                className={inputClass}
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-brand-brown">Contact Email</label>
