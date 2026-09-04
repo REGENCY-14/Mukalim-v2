@@ -171,26 +171,32 @@ Mirrors `AdminDataContext.tsx`'s `addCategory`/`updateCategory`/
 ### `POST /api/admin/categories`
 
 - **Auth**: `canEdit` (admin or editor)
-- **Body**: `{ "name": LocalizedText, "description": LocalizedText, "slug",
-  "iconUrl", "displayOrder", "active" }`
+- **Body**: `{ "name": LocalizedText, "description": LocalizedText,
+  "heroImageAlt": LocalizedText, "slug", "iconUrl", "heroImageUrl",
+  "displayOrder", "active" }` — `heroImageUrl`/`heroImageAlt` are optional
+  (default to a placeholder hero image + empty alt); the admin form doesn't
+  expose either yet
 - **201**: created `AdminCategory`
-- **409**: slug already exists
+- **Duplicate slug**: **not** a 409 as originally planned here — the
+  implementation (`categoryService.ensureUniqueSlug`) silently appends a
+  numeric suffix (`-2`, `-3`, ...) instead and always succeeds. A slug
+  conflict is not user-facing at all; don't build error handling for it.
 
 ### `PATCH /api/admin/categories/:id`
 
 - **Auth**: `canEdit`
 - **Body**: partial patch of the same fields
 - **200**: updated `AdminCategory`
+- Same duplicate-slug behavior as create (silent suffix, never 409).
 
 ### `DELETE /api/admin/categories/:id`
 
 - **Auth**: `canEdit`
 - **204**
-- Consider: what happens to `content_items` still pointing at this
-  category? The current mock just deletes the category and leaves orphaned
-  content — decide between blocking delete while content exists, cascading,
-  or reassigning to an "uncategorized" bucket, since the frontend has no UI
-  for any of those paths today.
+- **Resolved**: blocks with **409** while any `content_items` still
+  reference the category (`"Cannot delete '<slug>' — N content item(s)
+  still reference it. Reassign or delete them first."`) — no cascade, no
+  reassignment bucket.
 
 ### `PATCH /api/admin/categories/:id/toggle-active`
 

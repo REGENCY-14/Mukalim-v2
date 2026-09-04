@@ -46,20 +46,27 @@ export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const emailId = useId();
   const passwordId = useId();
   const rememberId = useId();
   const { locale } = useLocale();
   const t = ui[locale].signInPage;
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (login(email, password)) {
-      setError(null);
-      router.push(safeRedirectTarget(searchParams.get("next")));
-      return;
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      if (await login(email, password)) {
+        setError(null);
+        router.push(safeRedirectTarget(searchParams.get("next")));
+        return;
+      }
+      setError(t.invalidCredentials);
+    } finally {
+      setSubmitting(false);
     }
-    setError(t.invalidCredentials);
   };
 
   const fillDemoCredentials = () => {
@@ -133,9 +140,10 @@ export default function SignInForm() {
 
       <button
         type="submit"
-        className="w-full rounded-md bg-brand-brown py-3.5 text-sm font-medium tracking-[0.7px] text-brand-cream transition-colors hover:bg-brand-ink"
+        disabled={submitting}
+        className="w-full rounded-md bg-brand-brown py-3.5 text-sm font-medium tracking-[0.7px] text-brand-cream transition-colors hover:bg-brand-ink disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {t.submit}
+        {submitting ? t.submitting : t.submit}
       </button>
 
       <p className="text-center text-sm text-brand-brown-deep">

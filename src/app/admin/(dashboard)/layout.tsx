@@ -9,7 +9,7 @@ import Topbar from "@/components/admin/Topbar";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { session } = useAdminAuth();
+  const { session, status } = useAdminAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -18,29 +18,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // visitor gets bounced there with `?next=` pointing back to whatever
   // admin page they were trying to reach.
   //
-  // `session` is briefly `null` on every hard navigation/reload — the
-  // server (and the client's first hydration render) can't read
-  // localStorage, so `useSyncExternalStore` reports "logged out" for one
-  // commit even for an already-authenticated visitor, before a corrective
-  // re-render lands. Redirecting immediately on that stale `null` races the
-  // correction and can send a real user through sign-in and back to
-  // `/admin/dashboard`, losing whatever page they actually requested.
-  // Deferring the redirect and cancelling it in the effect's cleanup (which
-  // runs when `session` changes again, i.e. once the correction lands)
-  // means a genuinely logged-out visitor still redirects — just one tick
-  // later — while a real session never triggers it at all.
+  // `status` starts at "loading" (the `GET /auth/session` check is still in
+  // flight) and only becomes "unauthenticated" once the backend has
+  // actually said there's no valid session — so this never races a real
+  // session the way reading localStorage synchronously used to.
   useEffect(() => {
-    if (session !== null) return;
-    const timeoutId = window.setTimeout(() => {
-      router.replace(`/sign-in?next=${encodeURIComponent(pathname)}`);
-    }, 0);
-    return () => window.clearTimeout(timeoutId);
-  }, [session, router, pathname]);
+    if (status !== "unauthenticated") return;
+    router.replace(`/sign-in?next=${encodeURIComponent(pathname)}`);
+  }, [status, router, pathname]);
 
-  if (!session) {
-    // Either genuinely logged out (redirect effect above is about to fire)
-    // or — for one render — the server/first-hydration snapshot. Either
-    // way, don't flash real dashboard content.
+  if (status !== "authenticated" || !session) {
+    // Either still checking, or genuinely logged out (redirect effect above
+    // is about to fire) — either way, don't flash real dashboard content.
     return (
       <div className="flex min-h-screen items-center justify-center bg-admin-cream">
         <div className="size-8 animate-spin rounded-full border-2 border-brand-gold border-t-transparent" />

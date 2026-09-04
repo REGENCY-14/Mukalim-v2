@@ -11,6 +11,15 @@ export type AdminRole = "admin" | "editor" | "viewer";
 
 export const ADMIN_ROLES: AdminRole[] = ["admin", "editor", "viewer"];
 
+// TODO(real-api-migration): `AdminCategory` below is the mock shape, still
+// used by pages not yet wired to the real backend (content/media/users —
+// see AdminDataContext.tsx). The migrated Categories page instead imports a
+// differently-shaped `AdminCategory` from `lib/admin/api.ts` (real field
+// names: `iconUrl` not `icon`, plus `heroImageUrl`/`heroImageAlt`,
+// `createdAt`). Two types, same name, different modules — collapse this one
+// away (and update every remaining mock consumer) once every admin page is
+// migrated off `AdminDataContext`.
+
 export type Language = "fr" | "en" | "de" | "it";
 
 export const LANGUAGES: { code: Language; label: string }[] = [

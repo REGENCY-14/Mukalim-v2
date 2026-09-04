@@ -1,12 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Plus, Pencil, Trash2, Power } from "lucide-react";
-import { useAdminData } from "@/lib/admin/AdminDataContext";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
 import { canEdit } from "@/lib/admin/permissions";
-import type { AdminCategory } from "@/lib/admin/types";
+import {
+  listCategories,
+  deleteCategory as apiDeleteCategory,
+  toggleCategoryActive as apiToggleCategoryActive,
+  type AdminCategory,
+} from "@/lib/admin/api";
+import { ApiError, isBackendMediaUrl, resolveMediaUrl } from "@/lib/api/client";
 import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import { CategoryStatusBadge } from "@/components/admin/Badge";
 import CategoryFormPanel from "@/components/admin/CategoryFormPanel";
@@ -17,9 +22,12 @@ function formatDate(iso: string): string {
 }
 
 export default function CategoriesPage() {
-  const { categories, deleteCategory, toggleCategoryActive } = useAdminData();
   const { session } = useAdminAuth();
   const editable = session ? canEdit(session.role) : false;
+
+  const [categories, setCategories] = useState<AdminCategory[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState<AdminCategory | null>(null);
@@ -27,6 +35,20 @@ export default function CategoriesPage() {
   // (see the note in that file for why this replaces a reset-on-prop effect).
   const [panelKey, setPanelKey] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<AdminCategory | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const load = () => {
+    listCategories()
+      .then((res) => {
+        setCategories(res.data);
+        setLoadError(null);
+      })
+      .catch((err: unknown) => {
+        setLoadError(err instanceof ApiError ? err.message : "Failed to load categories.");
+      });
+  };
+
+  useEffect(load, []);
 
   const openCreate = () => {
     setEditing(null);
@@ -40,7 +62,44 @@ export default function CategoriesPage() {
     setPanelOpen(true);
   };
 
-  const sorted = [...categories].sort((a, b) => a.displayOrder - b.displayOrder);
+  const handleSaved = (saved: AdminCategory) => {
+    setCategories((prev) => {
+      if (!prev) return prev;
+      const exists = prev.some((c) => c.id === saved.id);
+      return exists ? prev.map((c) => (c.id === saved.id ? saved : c)) : [...prev, saved];
+    });
+    setPanelOpen(false);
+  };
+
+  const handleToggleActive = async (category: AdminCategory) => {
+    setActionError(null);
+    try {
+      const updated = await apiToggleCategoryActive(category.id);
+      setCategories((prev) => prev?.map((c) => (c.id === updated.id ? updated : c)) ?? prev);
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Failed to update category.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setActionError(null);
+    try {
+      await apiDeleteCategory(deleteTarget.id);
+      setCategories((prev) => prev?.filter((c) => c.id !== deleteTarget.id) ?? prev);
+      setDeleteTarget(null);
+    } catch (err) {
+      // Notably the 409 "still has content" case (categoryService.remove) —
+      // surfaced verbatim so the admin knows why it didn't delete.
+      setActionError(err instanceof ApiError ? err.message : "Failed to delete category.");
+      setDeleteTarget(null);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const sorted = categories ? [...categories].sort((a, b) => a.displayOrder - b.displayOrder) : [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -49,9 +108,9 @@ export default function CategoriesPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="font-serif text-2xl font-bold text-brand-brown sm:text-3xl">Categories</h1>
-            <p className="text-sm text-admin-warm-grey">{categories.length} categories</p>
+            <p className="text-sm text-admin-warm-grey">{categories ? `${categories.length} categories` : "Loading…"}</p>
           </div>
-          {editable && (
+          {editable && categories && (
             <button
               type="button"
               onClick={openCreate}
@@ -64,82 +123,104 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-brand-line/30 bg-white shadow-[0_4px_20px_0_rgba(107,58,31,0.06)]">
-        <table className="w-full min-w-[720px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-brand-line/30 text-xs tracking-wide text-admin-warm-grey uppercase">
-              <th className="px-6 py-3.5 font-medium">Name</th>
-              <th className="px-6 py-3.5 font-medium">Slug</th>
-              <th className="px-6 py-3.5 font-medium">Status</th>
-              <th className="px-6 py-3.5 font-medium"># Items</th>
-              <th className="px-6 py-3.5 font-medium">Last Updated</th>
-              {editable && <th className="px-6 py-3.5 font-medium">Actions</th>}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-brand-line/20">
-            {sorted.map((category) => (
-              <tr key={category.id} className="transition-colors hover:bg-brand-gold/5">
-                <td className="flex items-center gap-3 px-6 py-4">
-                  <span className="relative flex size-9 shrink-0 items-center justify-center rounded-lg bg-admin-cream">
-                    <Image src={category.icon} alt="" width={18} height={18} className="object-contain" />
-                  </span>
-                  <span className="font-medium text-brand-brown">{category.name.en || category.name.fr}</span>
-                </td>
-                <td className="px-6 py-4 font-mono text-xs text-admin-warm-grey">{category.slug}</td>
-                <td className="px-6 py-4">
-                  <CategoryStatusBadge active={category.active} />
-                </td>
-                <td className="px-6 py-4 text-brand-brown/80">{category.contentCount}</td>
-                <td className="px-6 py-4 text-admin-warm-grey">{formatDate(category.updatedAt)}</td>
-                {editable && (
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => openEdit(category)}
-                        aria-label={`Edit ${category.name.en}`}
-                        className="flex size-8 items-center justify-center rounded-lg text-brand-brown/70 transition-colors hover:bg-brand-brown/5 hover:text-brand-brown"
-                      >
-                        <Pencil className="size-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => session && toggleCategoryActive(category.id, { name: session.name, role: session.role })}
-                        aria-label={`Toggle ${category.name.en} active`}
-                        className="flex size-8 items-center justify-center rounded-lg text-brand-brown/70 transition-colors hover:bg-brand-brown/5 hover:text-brand-brown"
-                      >
-                        <Power className="size-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeleteTarget(category)}
-                        aria-label={`Delete ${category.name.en}`}
-                        className="flex size-8 items-center justify-center rounded-lg text-admin-terracotta/70 transition-colors hover:bg-admin-terracotta/10 hover:text-admin-terracotta"
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </div>
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {actionError && (
+        <div className="rounded-2xl border border-admin-terracotta/30 bg-admin-terracotta/5 px-6 py-4 text-sm text-admin-terracotta">
+          {actionError}
+        </div>
+      )}
 
-      <CategoryFormPanel key={panelKey} open={panelOpen} onClose={() => setPanelOpen(false)} category={editing} />
+      {loadError ? (
+        <div className="rounded-2xl border border-admin-terracotta/30 bg-admin-terracotta/5 px-6 py-4 text-sm text-admin-terracotta">
+          {loadError}
+        </div>
+      ) : !categories ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="size-8 animate-spin rounded-full border-2 border-brand-gold border-t-transparent" />
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-2xl border border-brand-line/30 bg-white shadow-[0_4px_20px_0_rgba(107,58,31,0.06)]">
+          <table className="w-full min-w-[720px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-brand-line/30 text-xs tracking-wide text-admin-warm-grey uppercase">
+                <th className="px-6 py-3.5 font-medium">Name</th>
+                <th className="px-6 py-3.5 font-medium">Slug</th>
+                <th className="px-6 py-3.5 font-medium">Status</th>
+                <th className="px-6 py-3.5 font-medium"># Items</th>
+                <th className="px-6 py-3.5 font-medium">Last Updated</th>
+                {editable && <th className="px-6 py-3.5 font-medium">Actions</th>}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-brand-line/20">
+              {sorted.map((category) => (
+                <tr key={category.id} className="transition-colors hover:bg-brand-gold/5">
+                  <td className="flex items-center gap-3 px-6 py-4">
+                    <span className="relative flex size-9 shrink-0 items-center justify-center rounded-lg bg-admin-cream">
+                      <Image
+                        src={resolveMediaUrl(category.iconUrl)}
+                        alt=""
+                        width={18}
+                        height={18}
+                        className="object-contain"
+                        unoptimized={isBackendMediaUrl(category.iconUrl)}
+                      />
+                    </span>
+                    <span className="font-medium text-brand-brown">{category.name.en || category.name.fr}</span>
+                  </td>
+                  <td className="px-6 py-4 font-mono text-xs text-admin-warm-grey">{category.slug}</td>
+                  <td className="px-6 py-4">
+                    <CategoryStatusBadge active={category.active} />
+                  </td>
+                  <td className="px-6 py-4 text-brand-brown/80">{category.contentCount}</td>
+                  <td className="px-6 py-4 text-admin-warm-grey">{formatDate(category.updatedAt)}</td>
+                  {editable && (
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(category)}
+                          aria-label={`Edit ${category.name.en}`}
+                          className="flex size-8 items-center justify-center rounded-lg text-brand-brown/70 transition-colors hover:bg-brand-brown/5 hover:text-brand-brown"
+                        >
+                          <Pencil className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleActive(category)}
+                          aria-label={`Toggle ${category.name.en} active`}
+                          className="flex size-8 items-center justify-center rounded-lg text-brand-brown/70 transition-colors hover:bg-brand-brown/5 hover:text-brand-brown"
+                        >
+                          <Power className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(category)}
+                          aria-label={`Delete ${category.name.en}`}
+                          className="flex size-8 items-center justify-center rounded-lg text-admin-terracotta/70 transition-colors hover:bg-admin-terracotta/10 hover:text-admin-terracotta"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <CategoryFormPanel key={panelKey} open={panelOpen} onClose={() => setPanelOpen(false)} category={editing} onSaved={handleSaved} />
 
       <ConfirmDialog
         open={deleteTarget !== null}
         title={`Delete "${deleteTarget?.name.en}"?`}
-        description="This will permanently remove the category. Content items in it won't be deleted, but will need reassigning."
+        description={
+          deleting
+            ? "Deleting…"
+            : "This will permanently remove the category. It can only be deleted while no content items reference it."
+        }
         onCancel={() => setDeleteTarget(null)}
-        onConfirm={() => {
-          if (deleteTarget && session) {
-            deleteCategory(deleteTarget.id, { name: session.name, role: session.role });
-          }
-          setDeleteTarget(null);
-        }}
+        onConfirm={handleDelete}
       />
     </div>
   );

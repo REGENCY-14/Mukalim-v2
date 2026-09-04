@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { AdminMediaItem, Language, LocalizedText } from "@/lib/admin/types";
+import type { Language, LocalizedText } from "@/lib/admin/types";
 import { emptyLocalizedText } from "@/lib/admin/types";
-import { useAdminData } from "@/lib/admin/AdminDataContext";
+import { updateMediaAltText, type AdminMediaItem } from "@/lib/admin/api";
+import { ApiError, isBackendMediaUrl, resolveMediaUrl } from "@/lib/api/client";
 import SlideOver from "./SlideOver";
 import LanguageTabs from "./LanguageTabs";
 
@@ -15,6 +16,7 @@ function formatBytes(kb: number): string {
 interface MediaDetailPanelProps {
   media: AdminMediaItem | null;
   onClose: () => void;
+  onSaved: (media: AdminMediaItem) => void;
   editable: boolean;
 }
 
@@ -28,27 +30,44 @@ interface MediaDetailPanelProps {
  * render-time-adjustment pattern as `SettingsPage` — no ref, since reading
  * a ref during render isn't allowed here) instead of unmounting mid-animation.
  */
-export default function MediaDetailPanel({ media, onClose, editable }: MediaDetailPanelProps) {
-  const { updateMediaAltText } = useAdminData();
+export default function MediaDetailPanel({ media, onClose, onSaved, editable }: MediaDetailPanelProps) {
   const [lastMedia, setLastMedia] = useState(media);
   if (media && media !== lastMedia) setLastMedia(media);
   const displayMedia = media ?? lastMedia;
 
   const [activeLang, setActiveLang] = useState<Language>("en");
   const [altText, setAltText] = useState<LocalizedText>(() => media?.altText ?? emptyLocalizedText());
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!displayMedia) return null;
 
-  const handleSave = () => {
-    updateMediaAltText(displayMedia.id, altText);
-    onClose();
+  const handleSave = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const updated = await updateMediaAltText(displayMedia.id, altText);
+      onSaved(updated);
+      onClose();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to save alt text.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <SlideOver open={media !== null} onClose={onClose} title={displayMedia.filename}>
       <div className="flex flex-col gap-6">
         <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-admin-cream">
-          <Image src={displayMedia.url} alt="" fill sizes="480px" className="object-cover" />
+          <Image
+            src={resolveMediaUrl(displayMedia.url)}
+            alt=""
+            fill
+            sizes="480px"
+            className="object-cover"
+            unoptimized={isBackendMediaUrl(displayMedia.url)}
+          />
         </div>
 
         <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -93,6 +112,8 @@ export default function MediaDetailPanel({ media, onClose, editable }: MediaDeta
           </div>
         </div>
 
+        {error && <p className="text-sm text-admin-terracotta">{error}</p>}
+
         {editable && (
           <div className="flex justify-end gap-2">
             <button
@@ -105,9 +126,10 @@ export default function MediaDetailPanel({ media, onClose, editable }: MediaDeta
             <button
               type="button"
               onClick={handleSave}
-              className="rounded-xl bg-brand-gold px-5 py-2.5 text-sm font-medium text-[#5c4000] shadow-[0_4px_12px_rgba(225,169,60,0.3)]"
+              disabled={submitting}
+              className="rounded-xl bg-brand-gold px-5 py-2.5 text-sm font-medium text-[#5c4000] shadow-[0_4px_12px_rgba(225,169,60,0.3)] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Save Alt Text
+              {submitting ? "Saving…" : "Save Alt Text"}
             </button>
           </div>
         )}

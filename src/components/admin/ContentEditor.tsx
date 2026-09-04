@@ -1,16 +1,34 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ImagePlus } from "lucide-react";
-import type { AdminContentItem, ContentStatus, Language, LocalizedText } from "@/lib/admin/types";
+import type { ContentStatus, Language, LocalizedText } from "@/lib/admin/types";
 import { emptyLocalizedText } from "@/lib/admin/types";
-import { useAdminData } from "@/lib/admin/AdminDataContext";
-import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
+import {
+  createContent,
+  updateContent,
+  listCategories,
+  type AdminContentItem,
+  type AdminCategory,
+} from "@/lib/admin/api";
+import { ApiError, isBackendMediaUrl, resolveMediaUrl } from "@/lib/api/client";
 import Breadcrumbs from "./Breadcrumbs";
 import LanguageTabs from "./LanguageTabs";
 import Select from "./Select";
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
 
 interface ContentEditorProps {
   item: AdminContentItem | null;
@@ -23,35 +41,76 @@ interface ContentEditorProps {
  */
 export default function ContentEditor({ item }: ContentEditorProps) {
   const router = useRouter();
-  const { categories, addContent, updateContent } = useAdminData();
-  const { session } = useAdminAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
 
   const [activeLang, setActiveLang] = useState<Language>("en");
   const [title, setTitle] = useState<LocalizedText>(() => item?.title ?? emptyLocalizedText());
+  const [excerpt, setExcerpt] = useState<LocalizedText>(() => item?.excerpt ?? emptyLocalizedText());
   const [body, setBody] = useState<LocalizedText>(() => item?.body ?? emptyLocalizedText());
   const [seoTitle, setSeoTitle] = useState<LocalizedText>(() => item?.seoTitle ?? emptyLocalizedText());
   const [seoDescription, setSeoDescription] = useState<LocalizedText>(() => item?.seoDescription ?? emptyLocalizedText());
-  const [categoryId, setCategoryId] = useState(() => item?.categoryId ?? categories[0]?.id ?? "");
+  const [slug, setSlug] = useState(() => item?.slug ?? "");
+  const [slugTouched, setSlugTouched] = useState(() => item !== null);
+  const [tag, setTag] = useState(() => item?.tag ?? "");
+  const [categoryId, setCategoryId] = useState(() => item?.categoryId ?? "");
   const [featuredImage, setFeaturedImage] = useState(() => item?.featuredImage ?? "/mukalim/articles/art-turmeric.jpg");
   const [status, setStatus] = useState<ContentStatus>(() => item?.status ?? "draft");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    listCategories()
+      .then((res) => {
+        setCategories(res.data);
+        // New item, no category picked yet — default to the first one so
+        // the (required) categoryId always has a valid value to submit.
+        setCategoryId((current) => current || res.data[0]?.id || "");
+      })
+      .catch((err: unknown) => {
+        setCategoriesError(err instanceof ApiError ? err.message : "Failed to load categories.");
+      });
+  }, []);
+
+  const handleTitleChange = (value: string) => {
+    setTitle((prev) => ({ ...prev, [activeLang]: value }));
+    if (activeLang === "en" && !slugTouched) setSlug(slugify(value));
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) setFeaturedImage(URL.createObjectURL(file));
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!session) return;
-    const actor = { name: session.name, role: session.role };
-    const payload = { title, categoryId, featuredImage, body, seoTitle, seoDescription, status, author: session.name };
-    if (item) {
-      updateContent(item.id, payload, actor);
-    } else {
-      addContent(payload, actor);
+    // Same reasoning as CategoryFormPanel's icon guard: direct media upload
+    // isn't wired to the backend yet, so a blob: URL would only resolve in
+    // this tab and permanently break for everyone else.
+    if (featuredImage.startsWith("blob:")) {
+      setError("Direct image upload isn't wired up yet — enter an image path/URL instead of uploading a file.");
+      return;
     }
-    router.push("/admin/content");
+    if (!categoryId) {
+      setError("Choose a category.");
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    const payload = { categoryId, slug, tag, title, excerpt, featuredImage, body, seoTitle, seoDescription, status };
+    try {
+      if (item) {
+        await updateContent(item.id, payload);
+      } else {
+        await createContent(payload);
+      }
+      router.push("/admin/content");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to save content.");
+      setSubmitting(false);
+    }
   };
 
   const inputClass =
@@ -75,16 +134,27 @@ export default function ContentEditor({ item }: ContentEditorProps) {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-6 lg:col-span-2">
           <div className="flex flex-col gap-4 rounded-2xl border border-brand-line/30 bg-white p-6 shadow-[0_4px_20px_0_rgba(107,58,31,0.06)]">
-            <LanguageTabs active={activeLang} onChange={setActiveLang} fields={[title, body, seoTitle, seoDescription]} />
+            <LanguageTabs active={activeLang} onChange={setActiveLang} fields={[title, excerpt, body, seoTitle, seoDescription]} />
 
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-brand-brown">Title ({activeLang.toUpperCase()})</label>
               <input
                 value={title[activeLang]}
-                onChange={(event) => setTitle((prev) => ({ ...prev, [activeLang]: event.target.value }))}
+                onChange={(event) => handleTitleChange(event.target.value)}
                 required={activeLang === "en"}
                 placeholder="e.g. Turmeric: The Golden Healer"
                 className={inputClass}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-brand-brown">Excerpt ({activeLang.toUpperCase()})</label>
+              <textarea
+                value={excerpt[activeLang]}
+                onChange={(event) => setExcerpt((prev) => ({ ...prev, [activeLang]: event.target.value }))}
+                rows={2}
+                placeholder="Short summary shown on article cards"
+                className={`${inputClass} resize-none`}
               />
             </div>
 
@@ -132,18 +202,51 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                 options={categories.map((category) => ({ value: category.id, label: category.name.en || category.name.fr }))}
                 className={inputClass}
               />
+              {categoriesError && <p className="text-xs text-admin-terracotta">{categoriesError}</p>}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-brand-brown">Slug</label>
+              <input
+                value={slug}
+                onChange={(event) => {
+                  setSlugTouched(true);
+                  setSlug(slugify(event.target.value));
+                }}
+                required
+                placeholder="turmeric-the-golden-healer"
+                className={`${inputClass} font-mono`}
+              />
+              <p className="text-xs text-admin-warm-grey">
+                Auto-filled from the English title — editable, unique per category. A duplicate gets a numeric
+                suffix automatically.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-brand-brown">Tag</label>
+              <input
+                value={tag}
+                onChange={(event) => setTag(event.target.value)}
+                required
+                placeholder="e.g. Botanical"
+                className={inputClass}
+              />
+              <p className="text-xs text-admin-warm-grey">
+                Shown as the badge on article cards; also what the public tag filter matches against.
+              </p>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <span className="text-sm font-medium text-brand-brown">Featured Image</span>
               <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-admin-cream">
                 <Image
-                  src={featuredImage}
+                  src={resolveMediaUrl(featuredImage)}
                   alt=""
                   fill
                   sizes="360px"
                   className="object-cover"
-                  unoptimized={featuredImage.startsWith("blob:")}
+                  unoptimized={isBackendMediaUrl(featuredImage)}
                 />
               </div>
               <button
@@ -155,6 +258,9 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                 Replace image
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+              <p className="text-xs text-admin-warm-grey">
+                Preview only for now — direct upload isn&apos;t wired to the backend yet.
+              </p>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -173,15 +279,23 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                   </button>
                 ))}
               </div>
+              {/* publishedAt is set server-side the first time status flips to
+                  "published" and is never a request field — display-only. */}
+              {item?.publishedAt && (
+                <p className="text-xs text-admin-warm-grey">First published {formatDate(item.publishedAt)}</p>
+              )}
             </div>
           </div>
+
+          {error && <p className="text-sm text-admin-terracotta">{error}</p>}
 
           <div className="flex flex-col gap-2">
             <button
               type="submit"
-              className="w-full rounded-xl bg-brand-gold px-5 py-3 text-sm font-medium text-[#5c4000] shadow-[0_4px_12px_rgba(225,169,60,0.3)] transition-transform hover:scale-[1.01]"
+              disabled={submitting}
+              className="w-full rounded-xl bg-brand-gold px-5 py-3 text-sm font-medium text-[#5c4000] shadow-[0_4px_12px_rgba(225,169,60,0.3)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {item ? "Save Changes" : "Create Content"}
+              {submitting ? "Saving…" : item ? "Save Changes" : "Create Content"}
             </button>
             <button
               type="button"

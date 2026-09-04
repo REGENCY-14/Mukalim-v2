@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Bell, ChevronDown, LogOut, Menu, FlaskConical } from "lucide-react";
+import { Bell, LogOut, Menu } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAdminAuth, type AdminSession } from "@/lib/admin/AdminAuthContext";
 import { useAdminData } from "@/lib/admin/AdminDataContext";
-import { ADMIN_ROLES, type AdminRole } from "@/lib/admin/types";
-import { roleLabel } from "@/lib/admin/permissions";
 import { RoleBadge } from "./Badge";
 import { microTransition } from "@/lib/animations";
 
@@ -43,23 +41,21 @@ function useClickOutside(onOutside: () => void) {
 }
 
 export default function Topbar({ session, onOpenMobileMenu }: { session: AdminSession; onOpenMobileMenu: () => void }) {
-  const { logout, setRole } = useAdminAuth();
+  const { logout } = useAdminAuth();
   const { activity } = useAdminData();
   const [notifOpen, setNotifOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [roleMenuOpen, setRoleMenuOpen] = useState(false);
 
   const notifRef = useClickOutside(() => setNotifOpen(false));
   const userRef = useClickOutside(() => setUserMenuOpen(false));
-  const roleRef = useClickOutside(() => setRoleMenuOpen(false));
 
   // Just clear the session — no navigation call here. The (dashboard)
-  // layout's own guard effect picks up `session === null` and redirects to
-  // `/sign-in?next=<the admin page you were on>`, so there's one source of
-  // truth for "where does a logged-out visitor go" instead of two
-  // navigations racing each other.
+  // layout's own guard effect picks up `status === "unauthenticated"` and
+  // redirects to `/sign-in?next=<the admin page you were on>`, so there's
+  // one source of truth for "where does a logged-out visitor go" instead of
+  // two navigations racing each other.
   const handleLogout = () => {
-    logout();
+    void logout();
   };
 
   return (
@@ -76,50 +72,6 @@ export default function Topbar({ session, onOpenMobileMenu }: { session: AdminSe
       <div className="hidden md:block" />
 
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Dev-only role switcher */}
-        <div ref={roleRef} className="relative">
-          <button
-            type="button"
-            onClick={() => setRoleMenuOpen((open) => !open)}
-            className="flex items-center gap-1.5 rounded-lg border border-dashed border-admin-warm-grey/40 px-2.5 py-1.5 text-xs font-medium text-admin-warm-grey transition-colors hover:border-admin-warm-grey hover:text-brand-brown"
-          >
-            <FlaskConical className="size-3.5" />
-            <span className="hidden sm:inline">Preview as:</span> {roleLabel(session.role)}
-            <ChevronDown className="size-3.5" />
-          </button>
-          <AnimatePresence>
-            {roleMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -6, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -6, scale: 0.97 }}
-                transition={microTransition}
-                className="absolute top-[calc(100%+8px)] right-0 z-10 w-44 overflow-hidden rounded-xl border border-brand-line/40 bg-white py-1.5 shadow-[0_8px_30px_0_rgba(107,58,31,0.15)]"
-              >
-                <p className="px-3.5 pt-1 pb-2 text-[11px] font-medium tracking-wide text-admin-warm-grey uppercase">
-                  Dev-only preview
-                </p>
-                {ADMIN_ROLES.map((r: AdminRole) => (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => {
-                      setRole(r);
-                      setRoleMenuOpen(false);
-                    }}
-                    className={`flex w-full items-center justify-between px-3.5 py-2 text-left text-sm transition-colors hover:bg-brand-brown/5 ${
-                      session.role === r ? "font-semibold text-brand-brown" : "text-brand-brown/80"
-                    }`}
-                  >
-                    {roleLabel(r)}
-                    {session.role === r && <span className="text-brand-gold">✓</span>}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
         {/* Notifications */}
         <div ref={notifRef} className="relative">
           <button

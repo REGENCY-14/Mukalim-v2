@@ -1,138 +1,112 @@
 "use client";
 
 /**
- * Mock admin auth. There is no backend — `login()` checks the credentials
- * against a single hardcoded demo account and, on success, writes a session
- * object to localStorage. The role stored alongside it is what the "preview
- * as" dev-only role switcher in the topbar changes — it's independent of
- * *who* is logged in, by design (see the dashboard brief).
+ * Real admin auth against the mukalimv2-backend API. The backend is the
+ * source of truth via an httpOnly session cookie — this context never reads
+ * or writes storage itself, it just mirrors what the API says:
  *
- * Read via `useSyncExternalStore` for the same reason as `LocaleContext`:
- * the server (and the client's first hydration pass) must see "logged out"
- * so there's no mismatch, then React reconciles against localStorage after
- * hydration.
+ * - On mount, `GET /auth/session` tells us whether the cookie the browser
+ *   is already holding (if any) is still valid — this is what survives a
+ *   page refresh, not localStorage.
+ * - `login`/`logout` call the matching endpoints and update local state from
+ *   the response; the cookie itself is set/cleared by the backend, invisible
+ *   to this code (httpOnly).
+ *
+ * `status` exists so consumers can tell "haven't checked yet" apart from
+ * "checked, and you're logged out" — conflating them would either flash
+ * real dashboard content before the check resolves, or bounce an
+ * already-authenticated visitor to /sign-in for one frame on every refresh.
  */
 
-import { createContext, useContext, type ReactNode } from "react";
-import { useSyncExternalStore } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { api, ApiError } from "@/lib/api/client";
 import type { AdminRole } from "./types";
 
-const STORAGE_KEY = "mukalim-admin-session";
-const CHANGE_EVENT = "mukalim-admin-session-change";
-
-/** Demo-only credentials — there is no real account system behind this. */
-export const DEMO_CREDENTIALS = {
-  email: "admin@mukalim.com",
-  password: "mukalim2026",
-};
-
 export interface AdminSession {
+  id: string;
   name: string;
   email: string;
   role: AdminRole;
 }
 
-// `useSyncExternalStore`'s getSnapshot must return a referentially stable
-// value when nothing has actually changed — parsing localStorage fresh on
-// every call would return a new object each time even when the raw string
-// is identical, which React treats as "changed" and re-renders forever.
-// Cache against the raw string so unchanged storage returns the same
-// object reference.
-let cachedRaw: string | null = null;
-let cachedSession: AdminSession | null = null;
+/** A real seeded demo account (mukalimv2-backend's `db:seed`) — powers the sign-in form's "autofill demo login" shortcut. Password matches the backend's `SEED_DEMO_PASSWORD` default. */
+export const DEMO_CREDENTIALS = {
+  email: "amara@mukalim.com",
+  password: "Password123!",
+};
 
-function readSession(): AdminSession | null {
-  let raw: string | null;
-  try {
-    raw = window.localStorage.getItem(STORAGE_KEY);
-  } catch {
-    return null;
-  }
-  if (raw === cachedRaw) return cachedSession;
-  cachedRaw = raw;
-  if (!raw) {
-    cachedSession = null;
-    return null;
-  }
-  try {
-    const parsed = JSON.parse(raw) as Partial<AdminSession>;
-    cachedSession =
-      parsed.email && parsed.role
-        ? { name: parsed.name ?? "Admin User", email: parsed.email, role: parsed.role }
-        : null;
-  } catch {
-    cachedSession = null;
-  }
-  return cachedSession;
-}
+type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 
-function writeSession(session: AdminSession | null) {
-  try {
-    if (session) {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-    } else {
-      window.localStorage.removeItem(STORAGE_KEY);
-    }
-  } catch {
-    // Ignore — the dispatched event below still updates the UI for this session.
-  }
-  window.dispatchEvent(new Event(CHANGE_EVENT));
-}
-
-function subscribe(callback: () => void) {
-  window.addEventListener(CHANGE_EVENT, callback);
-  window.addEventListener("storage", callback);
-  return () => {
-    window.removeEventListener(CHANGE_EVENT, callback);
-    window.removeEventListener("storage", callback);
-  };
-}
-
-function getServerSnapshot(): AdminSession | null {
-  return null;
+interface SessionResponse {
+  user: AdminSession;
 }
 
 interface AdminAuthContextValue {
   session: AdminSession | null;
-  login: (email: string, password: string) => boolean;
-  logout: () => void;
-  setRole: (role: AdminRole) => void;
+  status: AuthStatus;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextValue>({
   session: null,
-  login: () => false,
-  logout: () => {},
-  setRole: () => {},
+  status: "loading",
+  login: async () => false,
+  logout: async () => {},
 });
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  // getServerSnapshot returns null (server always renders "logged out"), and
-  // React resolves the real localStorage value in a re-render immediately
-  // after hydration, before effects run — so a guard effect reading
-  // `session` never acts on a stale "logged out" value for a real session.
-  const session = useSyncExternalStore(subscribe, readSession, getServerSnapshot);
+  const [session, setSession] = useState<AdminSession | null>(null);
+  const [status, setStatus] = useState<AuthStatus>("loading");
 
-  const login = (email: string, password: string): boolean => {
-    const normalizedEmail = email.trim().toLowerCase();
-    if (normalizedEmail !== DEMO_CREDENTIALS.email || password !== DEMO_CREDENTIALS.password) {
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get<SessionResponse>("/auth/session")
+      .then(({ user }) => {
+        if (cancelled) return;
+        setSession(user);
+        setStatus("authenticated");
+      })
+      .catch(() => {
+        // 401 (no/expired session) is the expected case for a logged-out
+        // visitor; a network/server error also just means "can't confirm
+        // you're logged in" — either way, treat as unauthenticated rather
+        // than leaving the app stuck on "loading" forever.
+        if (cancelled) return;
+        setSession(null);
+        setStatus("unauthenticated");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
+    try {
+      const { user } = await api.post<SessionResponse>("/auth/login", { email, password });
+      setSession(user);
+      setStatus("authenticated");
+      return true;
+    } catch (error) {
+      if (!(error instanceof ApiError)) throw error;
+      // 401 invalid credentials, or a network/server error — the sign-in
+      // form shows the same inline message for any of these today.
       return false;
     }
-    writeSession({ name: "Amara Osei", email: DEMO_CREDENTIALS.email, role: "admin" });
-    return true;
-  };
+  }, []);
 
-  const logout = () => writeSession(null);
-
-  const setRole = (role: AdminRole) => {
-    if (!session) return;
-    writeSession({ ...session, role });
-  };
+  const logout = useCallback(async () => {
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      setSession(null);
+      setStatus("unauthenticated");
+    }
+  }, []);
 
   return (
-    <AdminAuthContext.Provider value={{ session, login, logout, setRole }}>
-      {children}
-    </AdminAuthContext.Provider>
+    <AdminAuthContext.Provider value={{ session, status, login, logout }}>{children}</AdminAuthContext.Provider>
   );
 }
 

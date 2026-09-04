@@ -6,9 +6,13 @@
  * state (all "writes" in this dashboard are local-only; nothing is sent
  * anywhere).
  *
- * Content, categories, images and dates are reused from the public site's
- * real data (`src/lib/categories.ts`, `public/mukalim/`) rather than
- * invented, so the two stay consistent.
+ * Content, categories, images and dates were originally reused from the
+ * public site's static data (formerly `src/lib/categories.ts`, now removed
+ * — the public site fetches real data from the backend instead, see
+ * `lib/publicApi.ts`) plus `public/mukalim/` images, rather than invented.
+ * This mock layer itself is now only load-bearing for the Settings page and
+ * the Topbar's activity dropdown — categories/content/media/users all have
+ * their own migrated data source (`lib/admin/api.ts`).
  */
 
 import type {

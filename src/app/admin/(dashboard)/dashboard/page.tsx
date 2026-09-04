@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Tags, FileText, FileClock, Image as ImageIcon } from "lucide-react";
-import { useAdminData } from "@/lib/admin/AdminDataContext";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
+import { getDashboardStats, getActivity, type DashboardStats, type AdminActivityEntry } from "@/lib/admin/api";
+import { ApiError } from "@/lib/api/client";
 import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import StatCard from "@/components/admin/StatCard";
 
@@ -18,10 +20,27 @@ function timeAgo(iso: string): string {
 }
 
 export default function DashboardPage() {
-  const { categories, content, media, activity } = useAdminData();
   const { session } = useAdminAuth();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [activity, setActivity] = useState<AdminActivityEntry[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const draftCount = content.filter((item) => item.status === "draft").length;
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([getDashboardStats(), getActivity(10)])
+      .then(([statsRes, activityRes]) => {
+        if (cancelled) return;
+        setStats(statsRes);
+        setActivity(activityRes.data);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setError(err instanceof ApiError ? err.message : "Something went wrong loading the dashboard.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="flex flex-col gap-8">
@@ -33,31 +52,51 @@ export default function DashboardPage() {
         <p className="text-sm text-admin-warm-grey">Here&apos;s what&apos;s happening across the site.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total Categories" value={categories.length} icon={Tags} tone="gold" />
-        <StatCard label="Total Content Items" value={content.length} icon={FileText} tone="brown" />
-        <StatCard label="Drafts Pending" value={draftCount} icon={FileClock} tone="terracotta" />
-        <StatCard label="Total Media Files" value={media.length} icon={ImageIcon} tone="green" />
-      </div>
-
-      <div className="rounded-2xl border border-brand-line/30 bg-white shadow-[0_4px_20px_0_rgba(107,58,31,0.06)]">
-        <div className="border-b border-brand-line/30 px-6 py-4">
-          <h2 className="font-serif text-lg font-bold text-brand-brown">Recent Activity</h2>
+      {error && (
+        <div className="rounded-2xl border border-admin-terracotta/30 bg-admin-terracotta/5 px-6 py-4 text-sm text-admin-terracotta">
+          {error}
         </div>
-        <ul className="divide-y divide-brand-line/20">
-          {activity.map((entry) => (
-            <li key={entry.id} className="flex items-start justify-between gap-4 px-6 py-4">
-              <p className="text-sm text-brand-brown/90">
-                <span className="font-medium">
-                  {entry.actorRole.charAt(0).toUpperCase() + entry.actorRole.slice(1)} {entry.actor}
-                </span>{" "}
-                {entry.action} <span className="font-medium">{entry.target}</span>
-              </p>
-              <span className="shrink-0 text-xs whitespace-nowrap text-admin-warm-grey">{timeAgo(entry.timestamp)}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      )}
+
+      {!error && !stats ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="size-8 animate-spin rounded-full border-2 border-brand-gold border-t-transparent" />
+        </div>
+      ) : stats ? (
+        <>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard label="Total Categories" value={stats.totalCategories} icon={Tags} tone="gold" />
+            <StatCard label="Total Content Items" value={stats.totalContentItems} icon={FileText} tone="brown" />
+            <StatCard label="Drafts Pending" value={stats.draftsPending} icon={FileClock} tone="terracotta" />
+            <StatCard label="Total Media Files" value={stats.totalMediaFiles} icon={ImageIcon} tone="green" />
+          </div>
+
+          <div className="rounded-2xl border border-brand-line/30 bg-white shadow-[0_4px_20px_0_rgba(107,58,31,0.06)]">
+            <div className="border-b border-brand-line/30 px-6 py-4">
+              <h2 className="font-serif text-lg font-bold text-brand-brown">Recent Activity</h2>
+            </div>
+            <ul className="divide-y divide-brand-line/20">
+              {activity.map((entry) => (
+                <li key={entry.id} className="flex items-start justify-between gap-4 px-6 py-4">
+                  <p className="text-sm text-brand-brown/90">
+                    <span className="font-medium">
+                      {entry.actorRole.charAt(0).toUpperCase() + entry.actorRole.slice(1)}{" "}
+                      {entry.actorName ?? "Unknown user"}
+                    </span>{" "}
+                    {entry.action} <span className="font-medium">{entry.targetLabel}</span>
+                  </p>
+                  <span className="shrink-0 text-xs whitespace-nowrap text-admin-warm-grey">
+                    {timeAgo(entry.createdAt)}
+                  </span>
+                </li>
+              ))}
+              {activity.length === 0 && (
+                <li className="px-6 py-8 text-center text-sm text-admin-warm-grey">No activity yet.</li>
+              )}
+            </ul>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
