@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { categories } from "@/lib/categories";
+import { usePublicCategories } from "@/lib/site/PublicCategoriesContext";
 import { useLocale } from "@/lib/i18n/LocaleContext";
-import { locales, localizeCategory, ui } from "@/lib/i18n/translations";
+import { locales, ui } from "@/lib/i18n/translations";
 import { baseTransition, microTransition } from "@/lib/animations";
 
 /** Matches the category page itself as well as its nested article pages
@@ -23,15 +23,12 @@ export default function TopNavBar() {
   const pathname = usePathname();
   const { locale, setLocale } = useLocale();
   const t = ui[locale];
+  const categories = usePublicCategories();
 
-  const navLinks = useMemo(
-    () =>
-      categories.map((category) => ({
-        label: localizeCategory(category, locale).navLabel,
-        href: `/${category.slug}`,
-      })),
-    [locale],
-  );
+  const navLinks = categories.map((category) => ({
+    label: category.navLabel,
+    href: `/${category.slug}`,
+  }));
 
   useEffect(() => {
     if (!isLangMenuOpen) return;

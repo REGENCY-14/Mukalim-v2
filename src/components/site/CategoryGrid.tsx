@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useLocale } from "@/lib/i18n/LocaleContext";
-import { localizeHomeCard, ui } from "@/lib/i18n/translations";
+import { ui } from "@/lib/i18n/translations";
+import { usePublicCategories } from "@/lib/site/PublicCategoriesContext";
 import {
   hoverLift,
   microTransition,
@@ -12,63 +13,34 @@ import {
   staggerItem,
 } from "@/lib/animations";
 
-const CATEGORIES = [
-  {
-    id: "cosmetics",
-    eyebrow: "Pure Extracts",
-    title: "Cosmetics",
-    description:
-      "Botanical ingredients crafted for purity, bringing natural vitality to premium skincare formulations.",
-    icon: "/mukalim/icon-cosmetics.svg",
-    image: "/mukalim/card-cosmetics.jpg",
-    href: "/cosmetics",
+/**
+ * Purely decorative kicker text ("Pure Extracts", "Sanitation", ...) — there
+ * is no backend field for this (categories have no "eyebrow"/tagline
+ * column), so unlike everything else on this page it can't come from the
+ * API. Kept as local, per-locale UI copy rather than reintroducing a
+ * duplicate content array — this is presentation chrome, not entity data.
+ */
+const EYEBROWS: Record<"en" | "fr", Record<string, string>> = {
+  en: {
+    cosmetics: "Pure Extracts",
+    "food-hygiene": "Sanitation",
+    "food-safety": "Certified",
+    "foods-and-benefits": "Nutritional Profiles",
+    "impact-of-therapeutic-treatment": "Traditional Remedies",
   },
-  {
-    id: "food-hygiene",
-    eyebrow: "Sanitation",
-    title: "Food Hygiene",
-    description:
-      "Rigorous standards and natural solutions ensuring pristine conditions from harvest to handling.",
-    icon: "/mukalim/icon-hygiene.svg",
-    image: "/mukalim/card-hygiene.jpg",
-    href: "/food-hygiene",
+  fr: {
+    cosmetics: "Extraits Purs",
+    "food-hygiene": "Assainissement",
+    "food-safety": "Certifié",
+    "foods-and-benefits": "Profils Nutritionnels",
+    "impact-of-therapeutic-treatment": "Remèdes Traditionnels",
   },
-  {
-    id: "food-safety",
-    eyebrow: "Certified",
-    title: "Food Safety",
-    description:
-      "Expertly tested protocols that guarantee uncompromising quality and consumer protection.",
-    icon: "/mukalim/icon-safety.svg",
-    image: "/mukalim/card-safety.jpg",
-    href: "/food-safety",
-  },
-  {
-    id: "foods-and-benefits",
-    eyebrow: "Nutritional Profiles",
-    title: "Foods and Benefits",
-    description:
-      "The rich histories and holistic benefits of nature's finest ingredients, curated for the modern kitchen.",
-    icon: "/mukalim/icon-foods-benefits.svg",
-    image: "/mukalim/articles/fb-hero.jpg",
-    href: "/foods-and-benefits",
-  },
-  {
-    id: "impact-of-therapeutic-treatment",
-    eyebrow: "Traditional Remedies",
-    title: "Impact of Therapeutic Treatment",
-    description:
-      "Traditional remedies and modern research behind nature's most respected healing botanicals.",
-    icon: "/mukalim/icon-therapeutic.svg",
-    image: "/mukalim/trust.jpg",
-    href: "/impact-of-therapeutic-treatment",
-  },
-];
+};
 
 export default function CategoryGrid() {
   const { locale } = useLocale();
   const t = ui[locale];
-  const localizedCategories = CATEGORIES.map((category) => localizeHomeCard(category, locale));
+  const categories = usePublicCategories();
 
   return (
     <section
@@ -89,9 +61,9 @@ export default function CategoryGrid() {
         viewport={scrollViewport}
         className="grid w-full grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {localizedCategories.map((category) => (
+        {categories.map((category) => (
           <motion.article
-            key={category.id}
+            key={category.slug}
             variants={staggerItem}
             whileHover={hoverLift}
             transition={microTransition}
@@ -99,8 +71,8 @@ export default function CategoryGrid() {
           >
             <div className="relative h-64 w-full shrink-0 overflow-hidden">
               <Image
-                src={category.image}
-                alt={category.title}
+                src={category.heroImage}
+                alt={category.heroImageAlt}
                 fill
                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -109,34 +81,20 @@ export default function CategoryGrid() {
             <div className="flex flex-1 flex-col justify-between gap-6 p-8">
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2">
-                  <img
-                    src={category.icon}
-                    alt=""
-                    aria-hidden="true"
-                    className="size-4"
-                  />
+                  <img src={category.iconUrl} alt="" aria-hidden="true" className="size-4" />
                   <span className="text-xs tracking-[1.2px] text-brand-gold-deep uppercase">
-                    {category.eyebrow}
+                    {EYEBROWS[locale][category.slug] ?? category.navLabel}
                   </span>
                 </div>
-                <h3 className="font-serif text-2xl font-semibold text-brand-brown">
-                  {category.title}
-                </h3>
-                <p className="text-base leading-relaxed text-brand-muted">
-                  {category.description}
-                </p>
+                <h3 className="font-serif text-2xl font-semibold text-brand-brown">{category.title}</h3>
+                <p className="text-base leading-relaxed text-brand-muted">{category.description}</p>
               </div>
               <a
-                href={category.href}
+                href={`/${category.slug}`}
                 className="inline-flex w-fit items-center gap-2 border-b-2 border-transparent pb-1.5 text-sm font-medium tracking-[0.7px] text-brand-rust transition-colors hover:border-brand-rust"
               >
                 {t.learnMore}
-                <img
-                  src="/mukalim/learn-more-arrow.svg"
-                  alt=""
-                  aria-hidden="true"
-                  className="h-[9px] w-3"
-                />
+                <img src="/mukalim/learn-more-arrow.svg" alt="" aria-hidden="true" className="h-[9px] w-3" />
               </a>
             </div>
           </motion.article>

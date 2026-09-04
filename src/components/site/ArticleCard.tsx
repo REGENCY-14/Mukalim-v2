@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { CategoryArticle } from "@/lib/categories";
+import type { PublicArticleSummary } from "@/lib/publicApi";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { ui } from "@/lib/i18n/translations";
 import { duration, ease, hoverLift, microTransition } from "@/lib/animations";
@@ -11,7 +11,7 @@ import { duration, ease, hoverLift, microTransition } from "@/lib/animations";
 const MotionLink = motion.create(Link);
 
 interface ArticleCardProps {
-  article: CategoryArticle;
+  article: PublicArticleSummary;
   categorySlug: string;
   /** Stagger index — mirrors staggerContainer's timing (0.04s + 0.08s per item)
    * so cards still stagger in on filter/sort changes, driven independently of
@@ -40,7 +40,7 @@ export default function ArticleCard({ article, categorySlug, index = 0 }: Articl
       <div className="relative h-56 w-full shrink-0 overflow-hidden">
         <Image
           src={article.image}
-          alt={article.imageAlt}
+          alt={article.title}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"

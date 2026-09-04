@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { categories } from "@/lib/categories";
+import { usePublicCategories } from "@/lib/site/PublicCategoriesContext";
 import { useLocale } from "@/lib/i18n/LocaleContext";
-import { localizeCategory, ui } from "@/lib/i18n/translations";
+import { ui } from "@/lib/i18n/translations";
 import { scrollReveal, scrollViewport, staggerContainer, staggerItem } from "@/lib/animations";
 
 const SOCIALS = [
@@ -15,8 +15,10 @@ const SOCIALS = [
 export default function Footer() {
   const { locale } = useLocale();
   const t = ui[locale];
+  const categories = usePublicCategories();
+
   const categoryLinks = categories.map((category) => ({
-    label: localizeCategory(category, locale).navLabel,
+    label: category.navLabel,
     href: `/${category.slug}`,
   }));
 
