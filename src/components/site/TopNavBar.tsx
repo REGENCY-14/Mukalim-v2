@@ -63,33 +63,50 @@ export default function TopNavBar() {
           />
         </Link>
 
-        <ul className="hidden items-center gap-7 xl:flex">
-          {navLinks.map((link) => {
-            const isActive = isNavLinkActive(pathname, link.href);
-            return (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`group relative py-2 text-sm tracking-[0.7px] whitespace-nowrap transition-colors ${
-                    isActive
-                      ? "font-semibold text-brand-gold-deep"
-                      : "font-medium text-brand-brown-deep hover:text-brand-rust"
-                  }`}
-                >
-                  {link.label}
-                  <span
-                    className={`absolute inset-x-0 -bottom-0.5 h-px origin-left transition-transform duration-200 ease-out ${
+        {/* min-w-0 is required for the overflow-x-auto below to actually
+            scroll rather than overflow the header — a flex item's default
+            min-width is `auto` (its content's intrinsic width), which
+            otherwise refuses to shrink and pushes the logo/right-side
+            controls out instead. A fixed 5-category list never hit this;
+            the category list is admin-managed now and unbounded. */}
+        <div className="relative hidden min-w-0 flex-1 xl:block">
+          <ul className="no-scrollbar flex items-center gap-7 overflow-x-auto">
+            {navLinks.map((link) => {
+              const isActive = isNavLinkActive(pathname, link.href);
+              return (
+                <li key={link.href} className="shrink-0">
+                  <Link
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`group relative py-2 text-sm tracking-[0.7px] whitespace-nowrap transition-colors ${
                       isActive
-                        ? "scale-x-100 bg-brand-gold-deep"
-                        : "scale-x-0 bg-brand-rust group-hover:scale-x-100"
+                        ? "font-semibold text-brand-gold-deep"
+                        : "font-medium text-brand-brown-deep hover:text-brand-rust"
                     }`}
-                  />
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                  >
+                    {link.label}
+                    <span
+                      className={`absolute inset-x-0 -bottom-0.5 h-px origin-left transition-transform duration-200 ease-out ${
+                        isActive
+                          ? "scale-x-100 bg-brand-gold-deep"
+                          : "scale-x-0 bg-brand-rust group-hover:scale-x-100"
+                      }`}
+                    />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          {/* Static edge fade — hints there's more to scroll when the list
+              overflows. Not scroll-position-aware (no JS/scroll listener):
+              a category list long enough to overflow this row is rare
+              enough that a plain always-on hint is enough, and it costs
+              nothing when the list fits and never scrolls at all. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-brand-cream to-transparent"
+          />
+        </div>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           <div ref={langMenuRef} className="relative hidden sm:block">
@@ -193,7 +210,11 @@ export default function TopNavBar() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={baseTransition}
-            className="overflow-hidden border-t border-brand-line/30 bg-brand-cream xl:hidden"
+            // max-h caps this at the visible viewport below the fixed 88px
+            // header — same unbounded-category-list reasoning as the
+            // desktop nav above, just vertical: a long list scrolls inside
+            // the panel instead of the panel running off-screen.
+            className="max-h-[calc(100dvh-88px)] overflow-x-hidden overflow-y-auto border-t border-brand-line/30 bg-brand-cream xl:hidden"
           >
             <ul className="flex flex-col px-4 py-2 sm:px-6">
               {navLinks.map((link) => {

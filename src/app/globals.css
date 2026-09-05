@@ -65,3 +65,14 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Hides the scrollbar on an internally-scrollable strip (the nav's category
+   list, TopNavBar.tsx) without disabling scrolling itself — the edge-fade
+   overlay is the visible "more to scroll" affordance instead. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
