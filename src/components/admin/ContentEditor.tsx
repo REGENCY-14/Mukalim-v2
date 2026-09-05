@@ -10,6 +10,7 @@ import {
   createContent,
   updateContent,
   listCategories,
+  uploadMedia,
   type AdminContentItem,
   type AdminCategory,
 } from "@/lib/admin/api";
@@ -59,6 +60,7 @@ export default function ContentEditor({ item }: ContentEditorProps) {
   const [featuredImage, setFeaturedImage] = useState(() => item?.featuredImage ?? "/mukalim/articles/art-turmeric.jpg");
   const [status, setStatus] = useState<ContentStatus>(() => item?.status ?? "draft");
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -79,20 +81,25 @@ export default function ContentEditor({ item }: ContentEditorProps) {
     if (activeLang === "en" && !slugTouched) setSlug(slugify(value));
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) setFeaturedImage(URL.createObjectURL(file));
+    event.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+    setUploadingImage(true);
+    setError(null);
+    try {
+      const { data } = await uploadMedia([file]);
+      const uploaded = data[0];
+      if (uploaded) setFeaturedImage(uploaded.url);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to upload image.");
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Same reasoning as CategoryFormPanel's icon guard: direct media upload
-    // isn't wired to the backend yet, so a blob: URL would only resolve in
-    // this tab and permanently break for everyone else.
-    if (featuredImage.startsWith("blob:")) {
-      setError("Direct image upload isn't wired up yet — enter an image path/URL instead of uploading a file.");
-      return;
-    }
     if (!categoryId) {
       setError("Choose a category.");
       return;
@@ -252,15 +259,14 @@ export default function ContentEditor({ item }: ContentEditorProps) {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center justify-center gap-2 rounded-xl border border-brand-line/40 px-4 py-2.5 text-sm font-medium text-brand-brown transition-colors hover:border-brand-gold hover:bg-brand-gold/5"
+                disabled={uploadingImage}
+                className="flex items-center justify-center gap-2 rounded-xl border border-brand-line/40 px-4 py-2.5 text-sm font-medium text-brand-brown transition-colors hover:border-brand-gold hover:bg-brand-gold/5 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <ImagePlus className="size-4" />
-                Replace image
+                {uploadingImage ? "Uploading…" : "Replace image"}
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-              <p className="text-xs text-admin-warm-grey">
-                Preview only for now — direct upload isn&apos;t wired to the backend yet.
-              </p>
+              <p className="text-xs text-admin-warm-grey">PNG, JPG, WebP, GIF, or SVG — 10MB max.</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -292,7 +298,7 @@ export default function ContentEditor({ item }: ContentEditorProps) {
           <div className="flex flex-col gap-2">
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || uploadingImage}
               className="w-full rounded-xl bg-brand-gold px-5 py-3 text-sm font-medium text-[#5c4000] shadow-[0_4px_12px_rgba(225,169,60,0.3)] transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {submitting ? "Saving…" : item ? "Save Changes" : "Create Content"}

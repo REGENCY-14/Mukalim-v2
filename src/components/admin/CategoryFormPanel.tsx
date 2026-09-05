@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Upload } from "lucide-react";
 import type { Language, LocalizedText } from "@/lib/admin/types";
 import { emptyLocalizedText } from "@/lib/admin/types";
-import { createCategory, updateCategory, type AdminCategory } from "@/lib/admin/api";
+import { createCategory, updateCategory, uploadMedia, type AdminCategory } from "@/lib/admin/api";
 import { ApiError, isBackendMediaUrl, resolveMediaUrl } from "@/lib/api/client";
 import SlideOver from "./SlideOver";
 import LanguageTabs from "./LanguageTabs";
@@ -46,6 +46,7 @@ export default function CategoryFormPanel({ open, onClose, category, onSaved }: 
   const [displayOrder, setDisplayOrder] = useState(() => category?.displayOrder ?? 1);
   const [active, setActive] = useState(() => category?.active ?? true);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingIcon, setUploadingIcon] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleNameChange = (value: string) => {
@@ -53,22 +54,25 @@ export default function CategoryFormPanel({ open, onClose, category, onSaved }: 
     if (activeLang === "en" && !slugTouched) setSlug(slugify(value));
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) setIcon(URL.createObjectURL(file));
+    event.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+    setUploadingIcon(true);
+    setError(null);
+    try {
+      const { data } = await uploadMedia([file]);
+      const uploaded = data[0];
+      if (uploaded) setIcon(uploaded.url);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to upload icon.");
+    } finally {
+      setUploadingIcon(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Direct upload isn't wired to the backend yet (that needs the Media
-    // endpoints — POST /admin/media — which admin/media isn't calling
-    // either, still on mock data). A blob: URL only resolves in this tab,
-    // so sending one as `iconUrl` would silently store a permanently-broken
-    // image reference. Block it here rather than pass it along.
-    if (icon.startsWith("blob:")) {
-      setError("Direct icon upload isn't wired up yet — enter an image path/URL instead of uploading a file.");
-      return;
-    }
     setSubmitting(true);
     setError(null);
     try {
@@ -144,17 +148,15 @@ export default function CategoryFormPanel({ open, onClose, category, onSaved }: 
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 rounded-xl border border-brand-line/40 px-4 py-2.5 text-sm font-medium text-brand-brown transition-colors hover:border-brand-gold hover:bg-brand-gold/5"
+              disabled={uploadingIcon}
+              className="flex items-center gap-2 rounded-xl border border-brand-line/40 px-4 py-2.5 text-sm font-medium text-brand-brown transition-colors hover:border-brand-gold hover:bg-brand-gold/5 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Upload className="size-4" />
-              Upload image
+              {uploadingIcon ? "Uploading…" : "Upload image"}
             </button>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
           </div>
-          <p className="text-xs text-admin-warm-grey">
-            Preview only for now — direct upload isn&apos;t wired to the backend yet. Saving requires a real image
-            path or URL.
-          </p>
+          <p className="text-xs text-admin-warm-grey">PNG, JPG, WebP, GIF, or SVG — 10MB max.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -199,7 +201,7 @@ export default function CategoryFormPanel({ open, onClose, category, onSaved }: 
           </button>
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || uploadingIcon}
             className="rounded-xl bg-brand-gold px-5 py-2.5 text-sm font-medium text-[#5c4000] shadow-[0_4px_12px_rgba(225,169,60,0.3)] transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? "Saving…" : category ? "Save Changes" : "Add Category"}
