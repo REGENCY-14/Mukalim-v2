@@ -61,7 +61,33 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
 }
 
-async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+/**
+ * The access-token cookie is short-lived (15m — `JWT_ACCESS_EXPIRES_IN` in
+ * the backend) and nothing was ever calling `POST /auth/refresh` to renew
+ * it, so any session just died with a raw 401 the moment 15 minutes passed
+ * — easy to hit on mobile (backgrounding, the phone locking) even though
+ * it's the same bug on desktop.
+ *
+ * Shared across concurrent requests: if three calls all 401 around the same
+ * moment (e.g. a page firing several fetches right as the token expires),
+ * they wait on the same in-flight refresh instead of each independently
+ * hitting the endpoint and racing to rotate the cookies.
+ */
+let refreshPromise: Promise<boolean> | null = null;
+
+async function attemptRefresh(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = fetch(`${API_BASE_URL}/auth/refresh`, { method: "POST", credentials: "include" })
+      .then((res) => res.ok)
+      .catch(() => false)
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
+async function request<T>(path: string, options: RequestOptions = {}, isRetry = false): Promise<T> {
   const { body, headers, ...rest } = options;
   const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
 
@@ -87,6 +113,18 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 
   if (!res.ok) {
     const err = data?.error ?? { code: "UNKNOWN_ERROR", message: res.statusText };
+
+    // A 401 here most likely just means the access token expired, not that
+    // the refresh token (30d) has too — silently refresh and retry this
+    // exact request once before surfacing "you're logged out". Never for
+    // /auth/login (a fresh 401 there means wrong credentials, not an
+    // expired session) or /auth/refresh itself (would recurse).
+    const isAuthLifecycleEndpoint = path.startsWith("/auth/login") || path.startsWith("/auth/refresh");
+    if (res.status === 401 && !isRetry && !isAuthLifecycleEndpoint) {
+      const refreshed = await attemptRefresh();
+      if (refreshed) return request<T>(path, options, true);
+    }
+
     throw new ApiError(res.status, err.code, err.message, err.details);
   }
 
