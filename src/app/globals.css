@@ -56,8 +56,11 @@
   --color-admin-green: var(--color-admin-green);
   --color-admin-warm-grey: var(--color-admin-warm-grey);
 
+  /* Both point at the same font now (Plus Jakarta Sans, site-wide) — kept
+     as two tokens rather than collapsing `font-serif` usages across every
+     component, since that utility class is used throughout for headings. */
   --font-sans: var(--font-jakarta);
-  --font-serif: var(--font-playfair);
+  --font-serif: var(--font-jakarta);
 }
 
 body {

@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 import { AdminAuthProvider } from "@/lib/admin/AdminAuthContext";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["600", "700"],
-});
-
+// Single site-wide typeface — Playfair Display (the old `font-serif`
+// headings font) is gone. `font-serif` utility classes throughout the app
+// still work (see globals.css's `@theme inline`), they just resolve to this
+// same variable now rather than a second font family. Weights cover every
+// font-* utility actually used in the codebase (normal/medium/semibold/bold
+// — no font-light or font-black anywhere), so nothing falls back to
+// synthesized/faux bold.
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${jakarta.variable} h-full antialiased`}
+      className={`${jakarta.variable} h-full antialiased`}
     >
       {/* min-h-dvh (dynamic viewport height), not min-h-full/100vh — on
           mobile, the browser chrome (address bar) collapsing/expanding
