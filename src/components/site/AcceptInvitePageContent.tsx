@@ -1,29 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import TopNavBar from "@/components/site/TopNavBar";
 import AcceptInviteForm from "@/components/site/AcceptInviteForm";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { ui } from "@/lib/i18n/translations";
-import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
 import { fadeInUp, fadeInDown } from "@/lib/animations";
 
 export default function AcceptInvitePageContent() {
   const { locale } = useLocale();
   const t = ui[locale].acceptInvitePage;
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { session } = useAdminAuth();
   const rawToken = searchParams.get("token");
   const token = rawToken && rawToken.trim().length > 0 ? rawToken : null;
 
-  // Already signed in? This page has nothing left to do for you.
-  useEffect(() => {
-    if (session) router.replace("/admin/dashboard");
-  }, [session, router]);
+  // Unlike the sign-in page, this one does NOT redirect away when a session
+  // already exists: the invite token identifies a specific account distinct
+  // from whoever might currently be logged in on this browser (e.g. an
+  // admin dogfooding the flow, or a second invite opened in an already
+  // signed-in tab). Accepting the invite should always be allowed to
+  // proceed and take over the session — AcceptInviteForm's own submit
+  // handler is what redirects to the dashboard once that actually happens.
 
   return (
     <>
