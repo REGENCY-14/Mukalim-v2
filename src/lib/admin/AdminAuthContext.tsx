@@ -46,6 +46,7 @@ interface AdminAuthContextValue {
   status: AuthStatus;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  acceptInvite: (token: string, password: string) => Promise<void>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextValue>({
@@ -53,6 +54,7 @@ const AdminAuthContext = createContext<AdminAuthContextValue>({
   status: "loading",
   login: async () => false,
   logout: async () => {},
+  acceptInvite: async () => {},
 });
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
@@ -105,8 +107,20 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Unlike `login`, lets `ApiError` propagate uncaught — the accept-invite
+  // page needs to distinguish an invalid/expired token (no `details`) from a
+  // real Zod validation failure (`details.fieldErrors`) from a rate limit,
+  // and a boolean can't carry that.
+  const acceptInvite = useCallback(async (token: string, password: string): Promise<void> => {
+    const { user } = await api.post<SessionResponse>("/auth/accept-invite", { token, password });
+    setSession(user);
+    setStatus("authenticated");
+  }, []);
+
   return (
-    <AdminAuthContext.Provider value={{ session, status, login, logout }}>{children}</AdminAuthContext.Provider>
+    <AdminAuthContext.Provider value={{ session, status, login, logout, acceptInvite }}>
+      {children}
+    </AdminAuthContext.Provider>
   );
 }
 

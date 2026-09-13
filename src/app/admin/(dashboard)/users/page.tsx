@@ -19,6 +19,7 @@ import { UserStatusBadge } from "@/components/admin/Badge";
 import InviteUserPanel from "@/components/admin/InviteUserPanel";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Select from "@/components/admin/Select";
+import Toast from "@/components/admin/Toast";
 
 function initials(name: string): string {
   return name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
@@ -39,6 +40,7 @@ export default function UsersPage() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   // This page is entirely admin-only (view + every mutation) — the backend
   // enforces this itself (requireAdmin on every /admin/users route), this
@@ -71,8 +73,11 @@ export default function UsersPage() {
 
   if (!session || !canManageUsers(session.role)) return null;
 
-  const handleInvited = (user: AdminUser) => {
+  const handleInvited = (user: AdminUser, emailSent: boolean) => {
     setUsers((prev) => (prev ? [...prev, user] : [user]));
+    // When email delivery failed, the panel stays open showing a fallback
+    // copyable link instead — no toast needed in that case.
+    if (emailSent) setToast(`Invite sent to ${user.email}.`);
   };
 
   const handleRoleChange = async (user: AdminUser, role: AdminRole) => {
@@ -239,6 +244,8 @@ export default function UsersPage() {
       )}
 
       <InviteUserPanel open={panelOpen} onClose={() => setPanelOpen(false)} onInvited={handleInvited} />
+
+      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
 
       <ConfirmDialog
         open={deleteTarget !== null}

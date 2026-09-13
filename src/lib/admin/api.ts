@@ -277,13 +277,13 @@ export function deleteMedia(id: string): Promise<void> {
 // matches — the backend assigns one of 4 Tailwind class tokens on invite,
 // same convention the mock used.
 //
-// Invite still has no real email delivery (see backend README's Auth
-// notes) — `POST /admin/users` returns the raw `inviteToken` directly in
-// the response, and there is no accept-invite UI page anywhere in this
-// frontend, only the raw `POST /api/auth/accept-invite` endpoint. Until
-// that page exists, the admin has no in-app way to deliver this beyond
-// copying the token themselves — surfaced as-is, not hidden behind a fake
-// "invite sent" message.
+// Invite sends a real email via Resend (see backend's utils/email.ts) —
+// `POST /admin/users` returns `{ user, emailSent, inviteToken? }`. When the
+// email send fails (Resend misconfigured, transient error), `emailSent` is
+// false and the raw `inviteToken` is returned instead so the admin can
+// still deliver the accept-invite link manually — the frontend's
+// `/accept-invite` page (POST /api/auth/accept-invite) is what that link
+// points to.
 export interface AdminUser {
   id: string;
   name: string;
@@ -301,12 +301,16 @@ export function listUsers(): Promise<{ data: AdminUser[] }> {
 }
 
 export interface InviteUserInput {
-  name: string;
+  // Optional — the backend derives a placeholder name from the email
+  // address when omitted (correctable later via edit).
+  name?: string;
   email: string;
   role: AdminRole;
 }
 
-export function inviteUser(input: InviteUserInput): Promise<{ user: AdminUser; inviteToken: string }> {
+export function inviteUser(
+  input: InviteUserInput,
+): Promise<{ user: AdminUser; emailSent: boolean; inviteToken?: string }> {
   return api.post("/admin/users", input);
 }
 

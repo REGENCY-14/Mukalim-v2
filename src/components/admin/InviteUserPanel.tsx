@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Copy, Check } from "lucide-react";
 import { ADMIN_ROLES, type AdminRole } from "@/lib/admin/types";
 import { roleLabel } from "@/lib/admin/permissions";
@@ -12,18 +13,29 @@ import Select from "./Select";
 interface InviteUserPanelProps {
   open: boolean;
   onClose: () => void;
-  onInvited: (user: AdminUser) => void;
+  /** `emailSent` tells the parent whether to show a "invite sent" toast or
+   * rely on this panel's own fallback link UI (shown inline below instead
+   * of closing) when delivery failed. */
+  onInvited: (user: AdminUser, emailSent: boolean) => void;
+}
+
+interface FieldErrors {
+  name?: string;
+  email?: string;
+  role?: string;
 }
 
 export default function InviteUserPanel({ open, onClose, onInvited }: InviteUserPanelProps) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<AdminRole>("editor");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Set once the invite succeeds — switches the panel to a "here's the
-  // token" view instead of closing immediately (see the note below on why).
-  const [result, setResult] = useState<{ name: string; token: string } | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  // Set only when the invite succeeds but email delivery failed — switches
+  // the panel to a "here's the link" fallback view instead of closing.
+  const [fallback, setFallback] = useState<{ name: string; link: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
   const reset = () => {
@@ -31,7 +43,8 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
     setEmail("");
     setRole("editor");
     setError(null);
-    setResult(null);
+    setFieldErrors({});
+    setFallback(null);
     setCopied(false);
   };
 
@@ -44,56 +57,92 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
     event.preventDefault();
     setSubmitting(true);
     setError(null);
+    setFieldErrors({});
     try {
-      const { user, inviteToken } = await inviteUser({ name: name || email.split("@")[0] || email, email, role });
-      onInvited(user);
-      // There's no email provider wired up in the backend (see its README's
-      // Auth notes) and no accept-invite page anywhere in this frontend —
-      // the token has nowhere to go but here. Show it instead of closing,
-      // so there's at least a way for the admin to relay it manually until
-      // a real invite-delivery flow exists.
-      setResult({ name: user.name, token: inviteToken });
+      const trimmedName = name.trim();
+      const { user, emailSent, inviteToken } = await inviteUser({
+        name: trimmedName || undefined,
+        email,
+        role,
+      });
+      onInvited(user, emailSent);
+      if (emailSent) {
+        handleClose();
+      } else if (inviteToken) {
+        // Delivery failed (e.g. Resend misconfigured/down) but the user and
+        // token already exist server-side — offer the link so the admin can
+        // relay it manually rather than losing it.
+        const link = `${window.location.origin}/accept-invite?token=${encodeURIComponent(inviteToken)}`;
+        setFallback({ name: user.name, link });
+      } else {
+        // Shouldn't happen per the API contract, but don't strand the admin
+        // with no feedback if it ever does.
+        handleClose();
+      }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Failed to send invite.");
+      if (err instanceof ApiError) {
+        if (err.status === 401) {
+          router.push("/sign-in");
+          return;
+        }
+        if (err.status === 409) {
+          setFieldErrors({ email: err.message });
+        } else if (err.status === 400 && err.details && typeof err.details === "object") {
+          const flat = err.details as { fieldErrors?: Record<string, string[]> };
+          if (flat.fieldErrors) {
+            setFieldErrors({
+              name: flat.fieldErrors.name?.[0],
+              email: flat.fieldErrors.email?.[0],
+              role: flat.fieldErrors.role?.[0],
+            });
+          } else {
+            setError(err.message);
+          }
+        } else {
+          // Covers 429 RATE_LIMITED and anything else — surfaced generically.
+          setError(err.message);
+        }
+      } else {
+        setError("Failed to send invite.");
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleCopy = async () => {
-    if (!result) return;
+    if (!fallback) return;
     try {
-      await navigator.clipboard.writeText(result.token);
+      await navigator.clipboard.writeText(fallback.link);
       setCopied(true);
     } catch {
-      // Clipboard API unavailable (e.g. non-HTTPS context) — the token is
+      // Clipboard API unavailable (e.g. non-HTTPS context) — the link is
       // still selectable/visible in the field below.
     }
   };
 
   return (
-    <SlideOver open={open} onClose={handleClose} title={result ? "Invite Created" : "Invite User"} widthClassName="max-w-md">
-      {result ? (
+    <SlideOver open={open} onClose={handleClose} title={fallback ? "Invite Created" : "Invite User"} widthClassName="max-w-md">
+      {fallback ? (
         <div className="flex flex-col gap-5">
           <p className="text-sm text-brand-brown">
-            <span className="font-medium">{result.name}</span> was created with status <em>invited</em>. No email was
-            sent — there&apos;s no mail provider wired up yet, so this token needs to be relayed to them manually
-            (e.g. via <code className="rounded bg-admin-cream px-1 py-0.5 text-xs">POST /api/auth/accept-invite</code>{" "}
-            once there&apos;s a page for it).
+            <span className="font-medium">{fallback.name}</span> was created with status <em>invited</em>, but the
+            invite email couldn&apos;t be delivered. Share this link with them directly so they can set their
+            password.
           </p>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-brand-brown">Invite Token</label>
+            <label className="text-sm font-medium text-brand-brown">Invite Link</label>
             <div className="flex items-center gap-2">
               <input
                 readOnly
-                value={result.token}
+                value={fallback.link}
                 onFocus={(event) => event.target.select()}
                 className="w-full truncate rounded-xl border border-brand-line/40 bg-admin-cream px-4 py-2.5 font-mono text-xs text-brand-brown outline-none"
               />
               <button
                 type="button"
                 onClick={handleCopy}
-                aria-label="Copy invite token"
+                aria-label="Copy invite link"
                 className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-brand-line/40 text-brand-brown transition-colors hover:border-brand-gold hover:bg-brand-gold/5"
               >
                 {copied ? <Check className="size-4 text-admin-green" /> : <Copy className="size-4" />}
@@ -121,6 +170,8 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
               placeholder="e.g. Priya Nair"
               className="w-full rounded-xl border border-brand-line/40 bg-admin-cream px-4 py-2.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
             />
+            <p className="text-xs text-admin-warm-grey">Leave blank to auto-generate from email.</p>
+            {fieldErrors.name && <p className="text-xs text-admin-terracotta">{fieldErrors.name}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-brand-brown">Email</label>
@@ -132,6 +183,7 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
               placeholder="name@mukalim.com"
               className="w-full rounded-xl border border-brand-line/40 bg-admin-cream px-4 py-2.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
             />
+            {fieldErrors.email && <p className="text-xs text-admin-terracotta">{fieldErrors.email}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-brand-brown">Role</label>
@@ -141,6 +193,7 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
               options={ADMIN_ROLES.map((r) => ({ value: r, label: roleLabel(r) }))}
               className="rounded-xl border border-brand-line/40 bg-admin-cream px-4 py-2.5 text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
             />
+            {fieldErrors.role && <p className="text-xs text-admin-terracotta">{fieldErrors.role}</p>}
           </div>
 
           {error && <p className="text-sm text-admin-terracotta">{error}</p>}
