@@ -7,6 +7,7 @@ import { useLocale } from "@/lib/i18n/LocaleContext";
 import { ui } from "@/lib/i18n/translations";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
 import { ApiError } from "@/lib/api/client";
+import EyeIcon from "./EyeIcon";
 
 interface AcceptInviteFormProps {
   /** null when `?token=` is missing/empty — handled before any submit. */
@@ -27,6 +28,7 @@ export default function AcceptInviteForm({ token }: AcceptInviteFormProps) {
   // since there's nothing a retry can fix.
   const [invalidToken, setInvalidToken] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const passwordId = useId();
   const confirmId = useId();
 
@@ -100,18 +102,28 @@ export default function AcceptInviteForm({ token }: AcceptInviteFormProps) {
         <label htmlFor={passwordId} className="text-xs font-medium tracking-[1px] text-brand-brown-deep uppercase">
           {t.passwordLabel}
         </label>
-        <input
-          id={passwordId}
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          required
-          minLength={8}
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          placeholder="••••••••"
-          className="w-full border-b border-brand-line bg-transparent py-2.5 text-base text-brand-ink outline-none transition-colors placeholder:text-brand-muted/60 focus:border-brand-brown"
-        />
+        <div className="relative">
+          <input
+            id={passwordId}
+            name="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            required
+            minLength={8}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="••••••••"
+            className="w-full border-b border-brand-line bg-transparent py-2.5 pr-9 text-base text-brand-ink outline-none transition-colors placeholder:text-brand-muted/60 focus:border-brand-brown"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((show) => !show)}
+            aria-label={showPassword ? t.hidePassword : t.showPassword}
+            className="absolute top-1/2 right-0 flex size-7 -translate-y-1/2 items-center justify-center text-brand-muted transition-colors hover:text-brand-brown"
+          >
+            <EyeIcon open={showPassword} />
+          </button>
+        </div>
         <p className="text-xs text-brand-muted">{t.passwordHint}</p>
       </div>
 
@@ -119,16 +131,18 @@ export default function AcceptInviteForm({ token }: AcceptInviteFormProps) {
         <label htmlFor={confirmId} className="text-xs font-medium tracking-[1px] text-brand-brown-deep uppercase">
           {t.confirmPasswordLabel}
         </label>
-        <input
-          id={confirmId}
-          name="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          value={confirmPassword}
-          onChange={(event) => setConfirmPassword(event.target.value)}
-          placeholder="••••••••"
-          className="w-full border-b border-brand-line bg-transparent py-2.5 text-base text-brand-ink outline-none transition-colors placeholder:text-brand-muted/60 focus:border-brand-brown"
-        />
+        <div className="relative">
+          <input
+            id={confirmId}
+            name="confirmPassword"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            placeholder="••••••••"
+            className="w-full border-b border-brand-line bg-transparent py-2.5 pr-9 text-base text-brand-ink outline-none transition-colors placeholder:text-brand-muted/60 focus:border-brand-brown"
+          />
+        </div>
       </div>
 
       {error && <p className="text-sm text-brand-rust">{error}</p>}
