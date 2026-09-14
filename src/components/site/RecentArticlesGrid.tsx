@@ -9,7 +9,7 @@ import { scrollViewport, staggerContainer } from "@/lib/animations";
 import ArticleCard from "./ArticleCard";
 
 interface RecentArticlesGridProps {
-  /** Server-fetched (English) — avoids a network round trip for the common
+  /** Server-fetched (English), avoids a network round trip for the common
    * case; see the page component. Empty if that fetch failed or nothing is
    * published yet. */
   initialArticles: PublicArticleSummaryWithCategory[];

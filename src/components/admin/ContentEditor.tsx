@@ -37,7 +37,7 @@ interface ContentEditorProps {
 
 /**
  * Callers key this by `item?.id ?? "new"` (see the two route pages) so each
- * item gets a fresh instance — form state is computed once from `item` via
+ * item gets a fresh instance, form state is computed once from `item` via
  * lazy `useState` initializers rather than a reset-on-prop-change effect.
  */
 export default function ContentEditor({ item }: ContentEditorProps) {
@@ -67,7 +67,7 @@ export default function ContentEditor({ item }: ContentEditorProps) {
     listCategories()
       .then((res) => {
         setCategories(res.data);
-        // New item, no category picked yet — default to the first one so
+        // New item, no category picked yet, default to the first one so
         // the (required) categoryId always has a valid value to submit.
         setCategoryId((current) => current || res.data[0]?.id || "");
       })
@@ -171,7 +171,7 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                 value={body[activeLang]}
                 onChange={(event) => setBody((prev) => ({ ...prev, [activeLang]: event.target.value }))}
                 rows={10}
-                placeholder="Article body — a plain styled textarea stands in for a rich text editor during the design phase."
+                placeholder="Article body, a plain styled textarea stands in for a rich text editor during the design phase."
                 className={`${inputClass} resize-y font-serif leading-relaxed`}
               />
             </div>
@@ -225,7 +225,7 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                 className={`${inputClass} font-mono`}
               />
               <p className="text-xs text-admin-warm-grey">
-                Auto-filled from the English title — editable, unique per category. A duplicate gets a numeric
+                Auto-filled from the English title, editable, unique per category. A duplicate gets a numeric
                 suffix automatically.
               </p>
             </div>
@@ -266,7 +266,7 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                 {uploadingImage ? "Uploading…" : "Replace image"}
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-              <p className="text-xs text-admin-warm-grey">PNG, JPG, WebP, GIF, or SVG — 10MB max.</p>
+              <p className="text-xs text-admin-warm-grey">PNG, JPG, WebP, GIF, or SVG, 10MB max.</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -286,7 +286,7 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                 ))}
               </div>
               {/* publishedAt is set server-side the first time status flips to
-                  "published" and is never a request field — display-only. */}
+                  "published" and is never a request field, display-only. */}
               {item?.publishedAt && (
                 <p className="text-xs text-admin-warm-grey">First published {formatDate(item.publishedAt)}</p>
               )}

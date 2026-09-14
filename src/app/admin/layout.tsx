@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 /**
  * Wraps every /admin/* route with the mock CMS data layer (categories,
  * content, media, users). Auth (`AdminAuthProvider`) lives in the root
- * layout instead, since the public `/sign-in` page — outside /admin —
+ * layout instead, since the public `/sign-in` page, outside /admin, 
  * needs it too; see that page for why there's no separate /admin/sign-in.
  */
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {

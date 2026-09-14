@@ -3,7 +3,7 @@
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 interface AlphabetFilterProps {
-  /** Letters with at least one matching article — everything else renders disabled. */
+  /** Letters with at least one matching article, everything else renders disabled. */
   availableLetters: Set<string>;
   activeLetter: string | null;
   onSelect: (letter: string | null) => void;

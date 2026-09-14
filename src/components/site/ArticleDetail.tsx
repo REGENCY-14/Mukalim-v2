@@ -12,7 +12,7 @@ import ArticleCard from "./ArticleCard";
 
 interface ArticleDetailProps {
   categorySlug: string;
-  /** Server-fetched, English — see CategoryHero for the same pattern. */
+  /** Server-fetched, English, see CategoryHero for the same pattern. */
   initialCategoryTitle: string;
   initialArticle: PublicArticleDetail;
 }
@@ -69,7 +69,7 @@ export default function ArticleDetail({ categorySlug, initialCategoryTitle, init
   const { categoryTitle, article } = state;
 
   // The backend does have a real per-locale `body` column
-  // (`content_translations.body`) — this isn't a hardcoded "French body
+  // (`content_translations.body`), this isn't a hardcoded "French body
   // isn't supported" case like the old static-data version had. It's just
   // that not every article necessarily has that locale's body filled in
   // yet, so this checks the actual content rather than assuming by locale.

@@ -20,7 +20,7 @@ export default function SignInPageContent() {
   const next = searchParams.get("next");
   const isAdminContext = next?.startsWith("/admin") ?? false;
 
-  // Already signed in? Skip the form — this is the same page whether you
+  // Already signed in? Skip the form, this is the same page whether you
   // arrived by clicking "Sign In" or got bounced here from a protected
   // /admin page (see `(dashboard)/layout.tsx`).
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function SignInPageContent() {
   return (
     <>
       <TopNavBar />
-      {/* Full-height split screen (no footer) — an editorial photo panel
+      {/* Full-height split screen (no footer), an editorial photo panel
           carries the brand instead of a generic centered-card + blurred-blob
           layout, so this page reads as Mukalim, not a template. */}
       <main className="grid min-h-screen pt-[88px] lg:grid-cols-2">
@@ -57,7 +57,7 @@ export default function SignInPageContent() {
               &ldquo;{t.quote}&rdquo;
             </motion.p>
             <p className="text-xs font-medium tracking-[2px] text-white/60 uppercase">
-              — {t.quoteAttribution}
+, {t.quoteAttribution}
             </p>
           </div>
         </div>

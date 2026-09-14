@@ -26,7 +26,7 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
       })
       .catch(() => {
         // 404 (bad id) and anything else both land on the same "not found"
-        // state — there's no separate error UI on this page to show a
+        // state, there's no separate error UI on this page to show a
         // distinct message for a network failure vs. a real 404.
         if (!cancelled) setNotFound(true);
       });

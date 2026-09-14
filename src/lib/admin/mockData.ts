@@ -1,17 +1,17 @@
 /**
  * Seed data for the admin dashboard. Structured the way real API responses
  * would look (flat arrays of objects, ISO dates, foreign-key style IDs) so
- * a real backend is a drop-in replacement later — see `AdminDataContext`,
+ * a real backend is a drop-in replacement later, see `AdminDataContext`,
  * which loads this once and then manages it as in-memory + localStorage
  * state (all "writes" in this dashboard are local-only; nothing is sent
  * anywhere).
  *
  * Content, categories, images and dates were originally reused from the
- * public site's static data (formerly `src/lib/categories.ts`, now removed
- * — the public site fetches real data from the backend instead, see
+ * public site's static data (formerly `src/lib/categories.ts`, now removed,
+ * the public site fetches real data from the backend instead, see
  * `lib/publicApi.ts`) plus `public/mukalim/` images, rather than invented.
  * This mock layer itself is now only load-bearing for the Settings page and
- * the Topbar's activity dropdown — categories/content/media/users all have
+ * the Topbar's activity dropdown, categories/content/media/users all have
  * their own migrated data source (`lib/admin/api.ts`).
  */
 

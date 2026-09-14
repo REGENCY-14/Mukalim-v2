@@ -5,7 +5,7 @@ import { LANGUAGES, type Language, type LocalizedText } from "@/lib/admin/types"
 interface LanguageTabsProps {
   active: Language;
   onChange: (lang: Language) => void;
-  /** One or more LocalizedText fields — a tab's dot is filled only once
+  /** One or more LocalizedText fields, a tab's dot is filled only once
    * every field is non-empty for that language (e.g. name AND description). */
   fields: LocalizedText[];
 }

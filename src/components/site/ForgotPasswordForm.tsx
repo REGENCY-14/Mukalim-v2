@@ -16,7 +16,7 @@ export default function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   // The backend's response message is deliberately identical whether or not
-  // the email matches an account (enumeration-safe) — shown as-is rather
+  // the email matches an account (enumeration-safe), shown as-is rather
   // than duplicated as a hardcoded translation string.
   const [sentMessage, setSentMessage] = useState<string | null>(null);
   const emailId = useId();

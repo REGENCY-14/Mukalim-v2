@@ -16,7 +16,7 @@ interface SelectProps {
   options: SelectOption[];
   onChange: (value: string) => void;
   /** Same border/background/padding you'd give a sibling <input> (e.g.
-   *  `inputClass`) — applied to the trigger button. No need to reserve
+   *  `inputClass`), applied to the trigger button. No need to reserve
    *  extra right padding for the chevron; it's a flex child, not overlaid. */
   className: string;
   /** Whether the wrapper stretches to fill its container (form fields) or
@@ -38,13 +38,13 @@ function useClickOutside(onOutside: () => void) {
 }
 
 /**
- * Fully custom dropdown — button trigger + animated menu — instead of a
+ * Fully custom dropdown, button trigger + animated menu, instead of a
  * native <select>. A native select's closed trigger can be restyled, but
  * its opened list is always the plain OS/browser popup; this matches the
  * bespoke pattern already used for the public site's filter dropdowns and
  * the nav's language switcher, so the open panel is brand-styled too.
  *
- * `disabled` isn't a prop here on purpose — every current usage sits
+ * `disabled` isn't a prop here on purpose, every current usage sits
  * inside a `<fieldset disabled={!editable}>`, and a disabled fieldset
  * already disables descendant <button>s per the HTML spec, so this picks
  * that up for free without extra plumbing.

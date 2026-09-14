@@ -1,19 +1,19 @@
 "use client";
 
 /**
- * Single shared source for the public category list — nav links
+ * Single shared source for the public category list, nav links
  * (`TopNavBar`), footer links (`Footer`), and the homepage grid
  * (`CategoryGrid`) all read from this instead of each fetching
  * independently. Two problems that fixed:
  *
  * 1. Nav/footer used to render empty until their own client fetch resolved
- *    (a regression vs. the old always-present static nav) — now they read
+ *    (a regression vs. the old always-present static nav), now they read
  *    `initialCategories`, fetched server-side by `app/(site)/layout.tsx`
  *    (English, respecting the same `revalidate = 60` ISR window as the
  *    category/article pages), so they're populated on first paint.
  * 2. Three independent components each doing their own "fetch French,
  *    correct on mount" cycle is now one correction, here, that all three
- *    read from — not three separate flashes of English before French loads.
+ *    read from, not three separate flashes of English before French loads.
  *
  * Same render-time-adjustment pattern as CategoryHero/ArticleDetail: English
  * is already known synchronously (server-fetched), so it's restored during

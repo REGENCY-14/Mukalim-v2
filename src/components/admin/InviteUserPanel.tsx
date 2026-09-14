@@ -33,7 +33,7 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  // Set only when the invite succeeds but email delivery failed — switches
+  // Set only when the invite succeeds but email delivery failed, switches
   // the panel to a "here's the link" fallback view instead of closing.
   const [fallback, setFallback] = useState<{ name: string; link: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -70,7 +70,7 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
         handleClose();
       } else if (inviteToken) {
         // Delivery failed (e.g. Resend misconfigured/down) but the user and
-        // token already exist server-side — offer the link so the admin can
+        // token already exist server-side, offer the link so the admin can
         // relay it manually rather than losing it.
         const link = `${window.location.origin}/accept-invite?token=${encodeURIComponent(inviteToken)}`;
         setFallback({ name: user.name, link });
@@ -99,7 +99,7 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
             setError(err.message);
           }
         } else {
-          // Covers 429 RATE_LIMITED and anything else — surfaced generically.
+          // Covers 429 RATE_LIMITED and anything else, surfaced generically.
           setError(err.message);
         }
       } else {
@@ -116,7 +116,7 @@ export default function InviteUserPanel({ open, onClose, onInvited }: InviteUser
       await navigator.clipboard.writeText(fallback.link);
       setCopied(true);
     } catch {
-      // Clipboard API unavailable (e.g. non-HTTPS context) — the link is
+      // Clipboard API unavailable (e.g. non-HTTPS context), the link is
       // still selectable/visible in the field below.
     }
   };

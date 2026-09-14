@@ -37,7 +37,7 @@ export default function MediaPage() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selected, setSelected] = useState<AdminMediaItem | null>(null);
-  // Bumped only when *opening* a (possibly different) item — not on close,
+  // Bumped only when *opening* a (possibly different) item, not on close,
   // so MediaDetailPanel's close animation can keep rendering the item it
   // had while it fades out. See the note in that file.
   const [panelKey, setPanelKey] = useState(0);
@@ -49,9 +49,9 @@ export default function MediaPage() {
     setPanelKey((key) => key + 1);
   };
 
-  // Real filtering is server-side (`?category=`, `?search=` — filename
+  // Real filtering is server-side (`?category=`, `?search=`, filename
   // ILIKE and category usage computed live in mediaService.list), not
-  // client-side array filtering — debounced so typing in the search box
+  // client-side array filtering, debounced so typing in the search box
   // doesn't fire a request per keystroke.
   useEffect(() => {
     let cancelled = false;
@@ -84,7 +84,7 @@ export default function MediaPage() {
     listCategories()
       .then((res) => setCategories(res.data))
       .catch(() => {
-        // Non-fatal — the category filter just falls back to "All Categories" only.
+        // Non-fatal, the category filter just falls back to "All Categories" only.
       });
   }, []);
 
@@ -227,7 +227,7 @@ export default function MediaPage() {
           deleting
             ? "Deleting…"
             : deleteTarget && deleteTarget.usedIn.length > 0
-              ? `This file is currently used in: ${deleteTarget.usedIn.join(", ")}. The server blocks deleting a file that's still referenced — reassign or remove those references first.`
+              ? `This file is currently used in: ${deleteTarget.usedIn.join(", ")}. The server blocks deleting a file that's still referenced, reassign or remove those references first.`
               : "This will permanently remove the file from the media library."
         }
         onCancel={() => setDeleteTarget(null)}

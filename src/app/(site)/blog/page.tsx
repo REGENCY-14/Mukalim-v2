@@ -3,7 +3,7 @@ import BlogPageContent from "@/components/site/BlogPageContent";
 import { listRecentArticles } from "@/lib/publicApi";
 
 export const metadata: Metadata = {
-  title: "Blog & Recipes — Mukalim",
+  title: "Blog & Recipes, Mukalim",
   description: "Real articles from Mukalim's ingredient library, gathered in one place.",
 };
 

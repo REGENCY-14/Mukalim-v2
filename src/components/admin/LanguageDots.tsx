@@ -1,6 +1,6 @@
 import { LANGUAGES, type LocalizedText } from "@/lib/admin/types";
 
-/** Compact FR/EN/DE/IT completion indicator for table rows — the full
+/** Compact FR/EN/DE/IT completion indicator for table rows, the full
  * interactive version lives in `LanguageTabs` (used inside forms). */
 export default function LanguageDots({ fields }: { fields: LocalizedText[] }) {
   return (

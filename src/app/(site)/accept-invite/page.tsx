@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import AcceptInvitePageContent from "@/components/site/AcceptInvitePageContent";
 
 export const metadata: Metadata = {
-  title: "Accept Invite — Mukalim",
+  title: "Accept Invite, Mukalim",
   description: "Set your password to activate your Mukalim admin account.",
 };
 

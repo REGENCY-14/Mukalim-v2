@@ -8,7 +8,7 @@ import { microTransition } from "@/lib/animations";
 
 export type SortOption = "newest" | "oldest" | "a-z" | "z-a";
 
-/** Internal sentinel value for "no tag filter" — stays English regardless of
+/** Internal sentinel value for "no tag filter", stays English regardless of
  * locale so it never collides with a real (translated) tag string. */
 export const ALL_TAGS_VALUE = "All Ingredients";
 
@@ -49,14 +49,14 @@ interface FilterDropdownProps {
   value: string;
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
-  /** Which side of the trigger the panel's edge is pinned to — "left"
+  /** Which side of the trigger the panel's edge is pinned to, "left"
    *  (opens rightward) for a dropdown near the left of its row, "right"
    *  (opens leftward) for one near the right edge, so the fixed-width
    *  panel never runs off the viewport. Default: "left". */
   align?: "left" | "right";
 }
 
-/** A fully custom dropdown — button trigger + animated menu — instead of a
+/** A fully custom dropdown, button trigger + animated menu, instead of a
  * native <select>. A native select's closed trigger can be restyled, but
  * its opened list is always the plain OS/browser popup; this matches the
  * bespoke trigger+panel pattern already used for the nav's language
@@ -94,7 +94,7 @@ function FilterDropdown({ id, ariaLabel, value, options, onChange, align = "left
             transition={microTransition}
             className={`absolute top-[calc(100%+8px)] left-0 z-10 max-h-72 w-52 overflow-y-auto rounded-xl border border-brand-line/30 bg-white py-1.5 shadow-[0_8px_30px_0_rgba(107,58,31,0.15)] ${
               // The bar itself only spreads its two filter groups apart at
-              // `sm:` (see the `sm:justify-between` on the row below) — below
+              // `sm:` (see the `sm:justify-between` on the row below), below
               // that it's a flush-left stack, so a "right"-aligned dropdown
               // must still open left-0 on mobile or it runs off-screen.
               align === "right" ? "sm:right-0 sm:left-auto" : ""

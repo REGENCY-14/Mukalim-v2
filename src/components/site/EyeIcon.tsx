@@ -1,4 +1,4 @@
-/** Shared show/hide-password glyph — extracted from SignInForm so
+/** Shared show/hide-password glyph, extracted from SignInForm so
  * AcceptInviteForm (and anywhere else with a password field) can use the
  * same icon instead of redefining it. */
 export default function EyeIcon({ open }: { open: boolean }) {

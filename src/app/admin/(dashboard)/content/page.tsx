@@ -44,7 +44,7 @@ export default function ContentPage() {
   const [languageFilter, setLanguageFilter] = useState<"all" | Language>("all");
 
   // Filters are real query params against the backend (category/status
-  // server-side in SQL, language post-fetch — see listAdmin in
+  // server-side in SQL, language post-fetch, see listAdmin in
   // contentService.ts), not client-side array filtering, so this refetches
   // on every filter change instead of filtering an already-loaded list.
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function ContentPage() {
     listCategories()
       .then((res) => setCategories(res.data))
       .catch(() => {
-        // Non-fatal for this page — the category column just shows "—" and
+        // Non-fatal for this page, the category column just shows "-" and
         // the filter dropdown falls back to "All Categories" only.
       });
   }, []);
@@ -206,7 +206,7 @@ export default function ContentPage() {
                         </Link>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-brand-brown/80">{category?.name.en ?? "—"}</td>
+                    <td className="px-6 py-4 text-brand-brown/80">{category?.name.en ?? "-"}</td>
                     <td className="px-6 py-4">
                       <ContentStatusBadge status={item.status} />
                     </td>

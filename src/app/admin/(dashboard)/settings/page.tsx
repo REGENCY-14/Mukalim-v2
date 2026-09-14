@@ -19,7 +19,7 @@ export default function SettingsPage() {
 
   // `settings` is a singleton (no per-item `key` to remount on, unlike the
   // category/content/media forms), so re-syncing local form state when it
-  // changes externally — e.g. the SSR→localStorage hydration correction —
+  // changes externally, e.g. the SSR→localStorage hydration correction, 
   // uses React's "adjust state during render" pattern instead of an effect:
   // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
   const [prevSettings, setPrevSettings] = useState(settings);

@@ -42,7 +42,7 @@ export default function UsersPage() {
   const [deleting, setDeleting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  // This page is entirely admin-only (view + every mutation) — the backend
+  // This page is entirely admin-only (view + every mutation), the backend
   // enforces this itself (requireAdmin on every /admin/users route), this
   // redirect is a UI convenience for non-admins, not the real gate. See the
   // cross-role verification pass for confirmation the API rejects a direct
@@ -63,7 +63,7 @@ export default function UsersPage() {
       });
   }, [session]);
 
-  // Best-effort client-side hints only — the backend is the real gate
+  // Best-effort client-side hints only, the backend is the real gate
   // (403 self-delete, 409 last-admin change/disable/delete) and is what
   // actually gets verified live, not this count.
   const nonDisabledAdminCount = useMemo(
@@ -76,7 +76,7 @@ export default function UsersPage() {
   const handleInvited = (user: AdminUser, emailSent: boolean) => {
     setUsers((prev) => (prev ? [...prev, user] : [user]));
     // When email delivery failed, the panel stays open showing a fallback
-    // copyable link instead — no toast needed in that case.
+    // copyable link instead, no toast needed in that case.
     if (emailSent) setToast(`Invite sent to ${user.email}.`);
   };
 

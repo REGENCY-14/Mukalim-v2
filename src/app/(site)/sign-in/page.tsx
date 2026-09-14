@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import SignInPageContent from "@/components/site/SignInPageContent";
 
 export const metadata: Metadata = {
-  title: "Sign In — Mukalim",
+  title: "Sign In, Mukalim",
   description: "Sign in to your Mukalim account.",
 };
 

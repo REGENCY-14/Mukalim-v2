@@ -6,7 +6,7 @@
  * `AdminAuthContext`) so every piece of admin state hydrates the same,
  * SSR-safe way: the server always sees `seed`, and the client corrects to
  * the real localStorage value in a re-render that happens before effects
- * run — no manual "restore on mount" effect, no hydration mismatch.
+ * run, no manual "restore on mount" effect, no hydration mismatch.
  */
 
 type Listener = () => void;
@@ -30,7 +30,7 @@ export function createLocalStore<T>(key: string, seed: T): LocalStore<T> {
       const raw = window.localStorage.getItem(key);
       if (raw) state = JSON.parse(raw) as T;
     } catch {
-      // Malformed/unavailable storage — keep the seed.
+      // Malformed/unavailable storage, keep the seed.
     }
   }
 
@@ -38,7 +38,7 @@ export function createLocalStore<T>(key: string, seed: T): LocalStore<T> {
     try {
       window.localStorage.setItem(key, JSON.stringify(state));
     } catch {
-      // Ignore — in-memory state still updates for the rest of this session.
+      // Ignore, in-memory state still updates for the rest of this session.
     }
   }
 

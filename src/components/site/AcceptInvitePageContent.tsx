@@ -21,7 +21,7 @@ export default function AcceptInvitePageContent() {
   // from whoever might currently be logged in on this browser (e.g. an
   // admin dogfooding the flow, or a second invite opened in an already
   // signed-in tab). Accepting the invite should always be allowed to
-  // proceed and take over the session — AcceptInviteForm's own submit
+  // proceed and take over the session, AcceptInviteForm's own submit
   // handler is what redirects to the dashboard once that actually happens.
 
   return (

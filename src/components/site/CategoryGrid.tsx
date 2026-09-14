@@ -14,11 +14,11 @@ import {
 } from "@/lib/animations";
 
 /**
- * Purely decorative kicker text ("Pure Extracts", "Sanitation", ...) — there
+ * Purely decorative kicker text ("Pure Extracts", "Sanitation", ...), there
  * is no backend field for this (categories have no "eyebrow"/tagline
  * column), so unlike everything else on this page it can't come from the
  * API. Kept as local, per-locale UI copy rather than reintroducing a
- * duplicate content array — this is presentation chrome, not entity data.
+ * duplicate content array, this is presentation chrome, not entity data.
  */
 const EYEBROWS: Record<"en" | "fr", Record<string, string>> = {
   en: {

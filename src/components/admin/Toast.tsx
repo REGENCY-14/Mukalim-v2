@@ -10,7 +10,7 @@ interface ToastProps {
   duration?: number;
 }
 
-/** Minimal hand-rolled toast — this codebase has no toast library, so a
+/** Minimal hand-rolled toast, this codebase has no toast library, so a
  * single fixed-position banner is used instead of adding a dependency.
  * Only one toast is ever shown at a time (callers hold a single
  * `message | null` piece of state), so no stacking/queueing is needed. */

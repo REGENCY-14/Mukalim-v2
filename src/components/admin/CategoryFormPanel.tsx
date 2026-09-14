@@ -28,11 +28,11 @@ interface CategoryFormPanelProps {
 /**
  * Note: the parent (`categories/page.tsx`) mounts this with a `key` that
  * changes on every open (see `panelKey`), so each open is a fresh
- * component instance — form state can be computed once from `category` via
+ * component instance, form state can be computed once from `category` via
  * plain `useState` initializers below instead of a "reset on prop change"
  * effect (which React's `set-state-in-effect` rule flags: syncing local
  * state from a prop belongs in a lazy initializer or the render body, not
- * an effect — see https://react.dev/learn/you-might-not-need-an-effect).
+ * an effect, see https://react.dev/learn/you-might-not-need-an-effect).
  */
 export default function CategoryFormPanel({ open, onClose, category, onSaved }: CategoryFormPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -127,7 +127,7 @@ export default function CategoryFormPanel({ open, onClose, category, onSaved }: 
             className="w-full rounded-xl border border-brand-line/40 bg-admin-cream px-4 py-2.5 font-mono text-sm text-brand-brown outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20"
           />
           <p className="text-xs text-admin-warm-grey">
-            Auto-filled from the English name — editable. A duplicate slug gets a numeric suffix automatically, it
+            Auto-filled from the English name, editable. A duplicate slug gets a numeric suffix automatically, it
             won&apos;t block saving.
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function CategoryFormPanel({ open, onClose, category, onSaved }: 
             </button>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
           </div>
-          <p className="text-xs text-admin-warm-grey">PNG, JPG, WebP, GIF, or SVG — 10MB max.</p>
+          <p className="text-xs text-admin-warm-grey">PNG, JPG, WebP, GIF, or SVG, 10MB max.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

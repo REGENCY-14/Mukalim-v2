@@ -30,7 +30,7 @@ export default function TrustSection() {
 
   return (
     <section className="relative overflow-hidden bg-brand-cream-alt px-4 py-24 sm:px-6 lg:px-16">
-      {/* Decorative ambient shapes — static in the original design; given a slow,
+      {/* Decorative ambient shapes, static in the original design; given a slow,
           continuous drift here and frozen entirely for prefers-reduced-motion. */}
       <motion.div
         aria-hidden="true"

@@ -18,9 +18,9 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ### Shared responsiveness & animation foundation
 
-- `lib/animations.ts` — shared Framer Motion variants (page transitions, fade/slide, stagger, scroll reveal, hover/tap micro-interactions) and shared duration/easing tokens. Use these instead of introducing one-off transitions per component.
-- `components/AnimatedBackground.tsx` — reusable decorative animated background (aria-hidden, pointer-events-none, respects `prefers-reduced-motion`). Extend this rather than adding one-off background SVGs per page.
-- Tailwind v4's default breakpoint scale is used (`sm` 40rem / `md` 48rem / `lg` 64rem / `xl` 80rem / `2xl` 96rem) — no custom breakpoints are defined in `globals.css`.
+- `lib/animations.ts`, shared Framer Motion variants (page transitions, fade/slide, stagger, scroll reveal, hover/tap micro-interactions) and shared duration/easing tokens. Use these instead of introducing one-off transitions per component.
+- `components/AnimatedBackground.tsx`, reusable decorative animated background (aria-hidden, pointer-events-none, respects `prefers-reduced-motion`). Extend this rather than adding one-off background SVGs per page.
+- Tailwind v4's default breakpoint scale is used (`sm` 40rem / `md` 48rem / `lg` 64rem / `xl` 80rem / `2xl` 96rem), no custom breakpoints are defined in `globals.css`.
 
 ## Learn More
 

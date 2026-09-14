@@ -16,7 +16,7 @@ export default function ResetPasswordPageContent() {
   const rawToken = searchParams.get("token");
   const token = rawToken && rawToken.trim().length > 0 ? rawToken : null;
 
-  // Deliberately does NOT redirect away when a session already exists —
+  // Deliberately does NOT redirect away when a session already exists, 
   // same reasoning as AcceptInvitePageContent: the reset token identifies a
   // specific account distinct from whoever the browser might currently be
   // signed in as, and that live-tested bug (auto-bounce to the dashboard

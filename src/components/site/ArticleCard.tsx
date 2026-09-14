@@ -13,7 +13,7 @@ const MotionLink = motion.create(Link);
 interface ArticleCardProps {
   article: PublicArticleSummary;
   categorySlug: string;
-  /** Stagger index — mirrors staggerContainer's timing (0.04s + 0.08s per item)
+  /** Stagger index, mirrors staggerContainer's timing (0.04s + 0.08s per item)
    * so cards still stagger in on filter/sort changes, driven independently of
    * each other (required for AnimatePresence to animate individual add/remove). */
   index?: number;

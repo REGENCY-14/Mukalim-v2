@@ -4,7 +4,7 @@
  * AnimatedBackground
  *
  * Reusable decorative background: soft, blurred blobs that drift/rotate/pulse
- * slowly in an infinite loop. Purely decorative — never affects layout.
+ * slowly in an infinite loop. Purely decorative, never affects layout.
  *
  * Usage: render once near the top of a page/section that needs visual life
  * (hero sections, empty states, auth pages), inside a `relative` ancestor:

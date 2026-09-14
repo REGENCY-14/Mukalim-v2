@@ -10,7 +10,7 @@ import { ApiError } from "@/lib/api/client";
 import EyeIcon from "./EyeIcon";
 
 interface AcceptInviteFormProps {
-  /** null when `?token=` is missing/empty — handled before any submit. */
+  /** null when `?token=` is missing/empty, handled before any submit. */
   token: string | null;
 }
 
@@ -24,7 +24,7 @@ export default function AcceptInviteForm({ token }: AcceptInviteFormProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   // Set only for an invalid/expired token (backend's badRequest with no
-  // `details.fieldErrors`) — swaps the whole form out for a dead-end message
+  // `details.fieldErrors`), swaps the whole form out for a dead-end message
   // since there's nothing a retry can fix.
   const [invalidToken, setInvalidToken] = useState(false);
   const [submitting, setSubmitting] = useState(false);

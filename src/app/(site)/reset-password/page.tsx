@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import ResetPasswordPageContent from "@/components/site/ResetPasswordPageContent";
 
 export const metadata: Metadata = {
-  title: "Reset Password — Mukalim",
+  title: "Reset Password, Mukalim",
   description: "Set a new password for your Mukalim account.",
 };
 

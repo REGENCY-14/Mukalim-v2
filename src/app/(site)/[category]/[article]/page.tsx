@@ -11,7 +11,7 @@ import {
   isNotFoundError,
 } from "@/lib/publicApi";
 
-// Same ISR tradeoff as the category page — see the comment there.
+// Same ISR tradeoff as the category page, see the comment there.
 export const revalidate = 60;
 
 export async function generateStaticParams() {
@@ -27,7 +27,7 @@ export async function generateStaticParams() {
     );
     return params.flat();
   } catch {
-    // Backend unreachable at build time — render every article on-demand
+    // Backend unreachable at build time, render every article on-demand
     // at request time instead of failing the whole build.
     return [];
   }
@@ -39,7 +39,7 @@ export async function generateMetadata({
   const { category, article } = await params;
   try {
     const data = await getPublicArticle(category, article);
-    return { title: `${data.title} — Mukalim`, description: data.excerpt };
+    return { title: `${data.title}, Mukalim`, description: data.excerpt };
   } catch {
     return {};
   }

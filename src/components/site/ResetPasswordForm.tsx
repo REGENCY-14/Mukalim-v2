@@ -10,7 +10,7 @@ import { ApiError } from "@/lib/api/client";
 import EyeIcon from "./EyeIcon";
 
 interface ResetPasswordFormProps {
-  /** null when `?token=` is missing/empty — handled before any submit. */
+  /** null when `?token=` is missing/empty, handled before any submit. */
   token: string | null;
 }
 
@@ -24,7 +24,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   // Set only for an invalid/expired token (backend's badRequest with no
-  // `details.fieldErrors`) — covers expired, already-used, and never-existed
+  // `details.fieldErrors`), covers expired, already-used, and never-existed
   // tokens alike, indistinguishable by design. Swaps the whole form out for
   // a dead-end message with a link to request a fresh one.
   const [invalidToken, setInvalidToken] = useState(false);

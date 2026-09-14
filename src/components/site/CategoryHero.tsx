@@ -9,7 +9,7 @@ import { staggerContainer, staggerItem } from "@/lib/animations";
 
 interface CategoryHeroProps {
   categorySlug: string;
-  /** Server-fetched, always English — matches the "server/first-hydration
+  /** Server-fetched, always English, matches the "server/first-hydration
    * pass renders the default locale" pattern used everywhere else in this
    * app (LocaleContext, AdminAuthContext). Corrected client-side below when
    * the visitor's actual locale is French. */
@@ -23,7 +23,7 @@ export default function CategoryHero({ categorySlug, initialData }: CategoryHero
     data: initialData,
   });
 
-  // English is already known synchronously (server-fetched) — correct
+  // English is already known synchronously (server-fetched), correct
   // during render rather than round-tripping through an effect (same
   // render-time-adjustment pattern as MediaDetailPanel.tsx's `lastMedia`).
   // Only French needs an actual effect, since only it needs a fetch.
@@ -56,7 +56,7 @@ export default function CategoryHero({ categorySlug, initialData }: CategoryHero
       {/* A flat dark scrim + blur (not a low-opacity multiply over a light
           banner) so heading/description contrast holds regardless of how
           light, dark, or visually busy the underlying category photo is.
-          The blur specifically matters here — several category photos are
+          The blur specifically matters here, several category photos are
           high-detail/high-local-contrast (dried herbs, textured spices),
           and darkening alone doesn't stop letterforms from getting lost in
           that texture the way it does over the homepage Hero's softer photo. */}

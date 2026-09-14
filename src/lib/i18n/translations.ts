@@ -1,24 +1,24 @@
 /**
- * Static UI chrome translations (English / French) — nav/footer labels,
+ * Static UI chrome translations (English / French), nav/footer labels,
  * form copy, empty states, etc. This file used to also carry a second,
  * hand-maintained layer of content translations (`categoryTranslationsFr`,
  * `homeCardTranslationsFr`, `articleTranslationsFr` + matching `localize*`
  * helpers) that patched French text onto the hardcoded English data in the
- * now-deleted `lib/categories.ts`. That's gone — category/article content
+ * now-deleted `lib/categories.ts`. That's gone, category/article content
  * now comes from the real backend via `lib/publicApi.ts`, which resolves
  * `?locale=fr` server-side from actual `category_translations`/
  * `content_translations` rows, so there's nothing left for this file to
  * patch. Only genuinely backend-less UI copy remains here (see
- * `CategoryGrid.tsx`'s `EYEBROWS` for the one exception — a decorative
+ * `CategoryGrid.tsx`'s `EYEBROWS` for the one exception, a decorative
  * tagline with no backend field at all).
  *
  * The language switcher (see `TopNavBar`) is still client-side and doesn't
- * change the URL — it swaps a `locale` value held in `LocaleContext` and
+ * change the URL, it swaps a `locale` value held in `LocaleContext` and
  * persisted to localStorage. Components read UI strings through
  * `useLocale()` + `ui[locale]`; content components fetch their own
  * locale-specific data from `lib/publicApi.ts` (server-fetched English by
  * default for the initial paint, client-refetched when the visitor's
- * locale is French — see `CategoryHero`/`CategoryArticles`/`ArticleDetail`).
+ * locale is French, see `CategoryHero`/`CategoryArticles`/`ArticleDetail`).
  */
 
 export type Locale = "en" | "fr";
@@ -76,7 +76,7 @@ export const ui = {
       ],
       categoriesHeading: "Categories",
       contactHeading: "Contact Info",
-      // No hardcoded year — Footer.tsx prepends the current year at render
+      // No hardcoded year, Footer.tsx prepends the current year at render
       // time so this never needs a manual bump.
       copyright: "MUKALIM. All rights reserved.",
       privacy: "Privacy Policy",
@@ -104,7 +104,7 @@ export const ui = {
       published: "Published",
       moreIn: "More in",
       englishOnlyNote:
-        "This article is currently available in English only — we're translating our full library into French.",
+        "This article is currently available in English only, we're translating our full library into French.",
     },
     signInPage: {
       eyebrow: "Account Access",
@@ -141,7 +141,7 @@ export const ui = {
       hidePassword: "Hide password",
       submit: "Set Password & Sign In",
       submitting: "Setting up your account…",
-      missingToken: "This invite link is missing its token — please use the exact link from your invite email.",
+      missingToken: "This invite link is missing its token, please use the exact link from your invite email.",
       invalidTokenTitle: "Invite link invalid",
       backToSignIn: "Back to sign in",
       contactAdmin: "If this link has expired, ask your admin to send you a new invite.",
@@ -168,7 +168,7 @@ export const ui = {
       hidePassword: "Hide password",
       submit: "Set New Password",
       submitting: "Setting new password…",
-      missingToken: "This reset link is missing its token — please use the exact link from your email.",
+      missingToken: "This reset link is missing its token, please use the exact link from your email.",
       invalidTokenTitle: "Reset link invalid",
       backToSignIn: "Back to sign in",
       requestNewLink: "Request a new reset link",
@@ -182,14 +182,14 @@ export const ui = {
       storyHeading: "From Traditional Markets to Your Kitchen",
       storyParagraphs: [
         "Mukalim was founded by a small group of food scientists and traders who kept running into the same problem: the spices, botanicals, and wellness ingredients that carried the deepest flavor and richest tradition rarely came with any way to verify their quality.",
-        "So we built the bridge ourselves — traveling to the terroir where each ingredient is genuinely at its best, partnering directly with the growers and artisans who've worked that land for generations, and putting every batch through the same rigorous testing a pharmaceutical lab would use.",
+        "So we built the bridge ourselves, traveling to the terroir where each ingredient is genuinely at its best, partnering directly with the growers and artisans who've worked that land for generations, and putting every batch through the same rigorous testing a pharmaceutical lab would use.",
         "Today, that's still the whole model: real relationships upstream, real rigor downstream, and nothing in between pretending to be something it isn't.",
       ],
       valuesHeading: "What We Stand For",
       values: [
         {
           title: "Authenticity",
-          description: "Every ingredient is traceable to its actual origin — no blending away where something came from.",
+          description: "Every ingredient is traceable to its actual origin, no blending away where something came from.",
         },
         {
           title: "Rigor",
@@ -214,13 +214,13 @@ export const ui = {
           number: "01",
           title: "Sourcing",
           description:
-            "We travel to the specific terroir where each botanical genuinely thrives, building direct, long-term relationships with the growers and traditional processors who know it best — not buying through anonymous intermediaries.",
+            "We travel to the specific terroir where each botanical genuinely thrives, building direct, long-term relationships with the growers and traditional processors who know it best, not buying through anonymous intermediaries.",
         },
         {
           number: "02",
           title: "Organoleptic Testing",
           description:
-            "Master tasters evaluate every batch for flavor profile, aroma intensity, and consistency — the same sensory rigor used in fine wine and coffee grading, applied here to spices and botanicals.",
+            "Master tasters evaluate every batch for flavor profile, aroma intensity, and consistency, the same sensory rigor used in fine wine and coffee grading, applied here to spices and botanicals.",
         },
         {
           number: "03",
@@ -232,7 +232,7 @@ export const ui = {
           number: "04",
           title: "Packaging & Delivery",
           description:
-            "Sealed at peak freshness and shipped in packaging designed to protect volatile oils and aromatics — the same care that went into sourcing shouldn't be undone in transit.",
+            "Sealed at peak freshness and shipped in packaging designed to protect volatile oils and aromatics, the same care that went into sourcing shouldn't be undone in transit.",
         },
       ],
     },
@@ -240,7 +240,7 @@ export const ui = {
       eyebrow: "Sustainability",
       heading: "Our Commitment to the Land and the People on It",
       subtext:
-        "Quality ingredients and sustainable practices aren't a trade-off for us — the traditional growers we work with have farmed this way for generations because it's what keeps the land productive.",
+        "Quality ingredients and sustainable practices aren't a trade-off for us, the traditional growers we work with have farmed this way for generations because it's what keeps the land productive.",
       commitmentsHeading: "Where We Draw the Line",
       commitments: [
         {
@@ -261,15 +261,15 @@ export const ui = {
         {
           title: "Fair Labor Standards",
           description:
-            "Every sourcing partnership is vetted against fair labor practices before a single order is placed — no exceptions for price.",
+            "Every sourcing partnership is vetted against fair labor practices before a single order is placed, no exceptions for price.",
         },
       ],
     },
     blogPage: {
       eyebrow: "Blog & Recipes",
       heading: "Stories From the Source",
-      subtext: "Real articles from our library — the same ones behind each ingredient category, gathered in one place.",
-      emptyState: "No articles are published yet — check back soon.",
+      subtext: "Real articles from our library, the same ones behind each ingredient category, gathered in one place.",
+      emptyState: "No articles are published yet, check back soon.",
       viewCategory: "View category",
     },
   },
@@ -346,7 +346,7 @@ export const ui = {
       published: "Publié le",
       moreIn: "Plus dans",
       englishOnlyNote:
-        "Cet article est actuellement disponible uniquement en anglais — nous traduisons progressivement notre bibliothèque en français.",
+        "Cet article est actuellement disponible uniquement en anglais, nous traduisons progressivement notre bibliothèque en français.",
     },
     signInPage: {
       eyebrow: "Accès au compte",
@@ -383,7 +383,7 @@ export const ui = {
       hidePassword: "Masquer le mot de passe",
       submit: "Définir le mot de passe et se connecter",
       submitting: "Configuration de votre compte…",
-      missingToken: "Ce lien d'invitation n'a pas de jeton — veuillez utiliser le lien exact reçu par e-mail.",
+      missingToken: "Ce lien d'invitation n'a pas de jeton, veuillez utiliser le lien exact reçu par e-mail.",
       invalidTokenTitle: "Lien d'invitation invalide",
       backToSignIn: "Retour à la connexion",
       contactAdmin: "Si ce lien a expiré, demandez à votre administrateur de vous envoyer une nouvelle invitation.",
@@ -410,7 +410,7 @@ export const ui = {
       hidePassword: "Masquer le mot de passe",
       submit: "Définir le nouveau mot de passe",
       submitting: "Définition du nouveau mot de passe…",
-      missingToken: "Ce lien de réinitialisation n'a pas de jeton — veuillez utiliser le lien exact reçu par e-mail.",
+      missingToken: "Ce lien de réinitialisation n'a pas de jeton, veuillez utiliser le lien exact reçu par e-mail.",
       invalidTokenTitle: "Lien de réinitialisation invalide",
       backToSignIn: "Retour à la connexion",
       requestNewLink: "Demander un nouveau lien de réinitialisation",
@@ -424,14 +424,14 @@ export const ui = {
       storyHeading: "Des Marchés Traditionnels à Votre Cuisine",
       storyParagraphs: [
         "Mukalim a été fondée par un petit groupe de scientifiques alimentaires et de commerçants confrontés au même problème : les épices, plantes et ingrédients de bien-être porteurs de la saveur la plus riche et de la tradition la plus profonde n'offraient presque jamais de moyen de vérifier leur qualité.",
-        "Nous avons donc construit ce pont nous-mêmes — en voyageant vers le terroir où chaque ingrédient est réellement à son meilleur, en établissant des partenariats directs avec les producteurs et artisans qui travaillent cette terre depuis des générations, et en soumettant chaque lot aux mêmes tests rigoureux qu'utiliserait un laboratoire pharmaceutique.",
+        "Nous avons donc construit ce pont nous-mêmes, en voyageant vers le terroir où chaque ingrédient est réellement à son meilleur, en établissant des partenariats directs avec les producteurs et artisans qui travaillent cette terre depuis des générations, et en soumettant chaque lot aux mêmes tests rigoureux qu'utiliserait un laboratoire pharmaceutique.",
         "Aujourd'hui, le modèle reste le même : de vraies relations en amont, une vraie rigueur en aval, et rien entre les deux qui prétende être autre chose que ce qu'il est.",
       ],
       valuesHeading: "Ce en Quoi Nous Croyons",
       values: [
         {
           title: "Authenticité",
-          description: "Chaque ingrédient est traçable jusqu'à son origine réelle — aucun mélange qui dissimule sa provenance.",
+          description: "Chaque ingrédient est traçable jusqu'à son origine réelle, aucun mélange qui dissimule sa provenance.",
         },
         {
           title: "Rigueur",
@@ -456,13 +456,13 @@ export const ui = {
           number: "01",
           title: "Approvisionnement",
           description:
-            "Nous voyageons vers le terroir spécifique où chaque plante s'épanouit réellement, en établissant des relations directes et durables avec les producteurs et transformateurs traditionnels qui la connaissent le mieux — jamais par des intermédiaires anonymes.",
+            "Nous voyageons vers le terroir spécifique où chaque plante s'épanouit réellement, en établissant des relations directes et durables avec les producteurs et transformateurs traditionnels qui la connaissent le mieux, jamais par des intermédiaires anonymes.",
         },
         {
           number: "02",
           title: "Tests Organoleptiques",
           description:
-            "Des maîtres goûteurs évaluent chaque lot selon le profil aromatique, l'intensité et la constance — la même rigueur sensorielle utilisée pour noter les grands vins et cafés, appliquée ici aux épices et plantes.",
+            "Des maîtres goûteurs évaluent chaque lot selon le profil aromatique, l'intensité et la constance, la même rigueur sensorielle utilisée pour noter les grands vins et cafés, appliquée ici aux épices et plantes.",
         },
         {
           number: "03",
@@ -474,7 +474,7 @@ export const ui = {
           number: "04",
           title: "Conditionnement et Livraison",
           description:
-            "Scellés à fraîcheur maximale et expédiés dans un emballage conçu pour protéger les huiles volatiles et arômes — le soin apporté à l'approvisionnement ne doit pas être défait en transit.",
+            "Scellés à fraîcheur maximale et expédiés dans un emballage conçu pour protéger les huiles volatiles et arômes, le soin apporté à l'approvisionnement ne doit pas être défait en transit.",
         },
       ],
     },
@@ -482,7 +482,7 @@ export const ui = {
       eyebrow: "Durabilité",
       heading: "Notre Engagement envers la Terre et Ceux Qui la Cultivent",
       subtext:
-        "Ingrédients de qualité et pratiques durables ne sont pas un compromis pour nous — les producteurs traditionnels avec qui nous travaillons cultivent ainsi depuis des générations, car c'est ce qui maintient la terre productive.",
+        "Ingrédients de qualité et pratiques durables ne sont pas un compromis pour nous, les producteurs traditionnels avec qui nous travaillons cultivent ainsi depuis des générations, car c'est ce qui maintient la terre productive.",
       commitmentsHeading: "Nos Limites Non Négociables",
       commitments: [
         {
@@ -503,15 +503,15 @@ export const ui = {
         {
           title: "Normes de Travail Équitables",
           description:
-            "Chaque partenariat d'approvisionnement est vérifié selon des normes de travail équitables avant toute commande — sans exception pour le prix.",
+            "Chaque partenariat d'approvisionnement est vérifié selon des normes de travail équitables avant toute commande, sans exception pour le prix.",
         },
       ],
     },
     blogPage: {
       eyebrow: "Blog et Recettes",
       heading: "Histoires Venues de la Source",
-      subtext: "De vrais articles de notre bibliothèque — les mêmes qui accompagnent chaque catégorie d'ingrédients, réunis ici.",
-      emptyState: "Aucun article n'est encore publié — revenez bientôt.",
+      subtext: "De vrais articles de notre bibliothèque, les mêmes qui accompagnent chaque catégorie d'ingrédients, réunis ici.",
+      emptyState: "Aucun article n'est encore publié, revenez bientôt.",
       viewCategory: "Voir la catégorie",
     },
   },

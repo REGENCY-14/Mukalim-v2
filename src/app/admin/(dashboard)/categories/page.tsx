@@ -90,7 +90,7 @@ export default function CategoriesPage() {
       setCategories((prev) => prev?.filter((c) => c.id !== deleteTarget.id) ?? prev);
       setDeleteTarget(null);
     } catch (err) {
-      // Notably the 409 "still has content" case (categoryService.remove) —
+      // Notably the 409 "still has content" case (categoryService.remove), 
       // surfaced verbatim so the admin knows why it didn't delete.
       setActionError(err instanceof ApiError ? err.message : "Failed to delete category.");
       setDeleteTarget(null);

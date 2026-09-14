@@ -24,10 +24,10 @@ interface MediaDetailPanelProps {
  * The caller keys this by `media?.id` so opening a *different* item gets a
  * fresh instance (form state below is computed once via lazy `useState`
  * initializers rather than a reset-on-prop-change effect). The same
- * instance persists through closing, though — `media` goes to `null` right
+ * instance persists through closing, though, `media` goes to `null` right
  * away so the panel starts its close animation, but we keep rendering the
  * last non-null item's content (`lastMedia`, synced via the same
- * render-time-adjustment pattern as `SettingsPage` — no ref, since reading
+ * render-time-adjustment pattern as `SettingsPage`, no ref, since reading
  * a ref during render isn't allowed here) instead of unmounting mid-animation.
  */
 export default function MediaDetailPanel({ media, onClose, onSaved, editable }: MediaDetailPanelProps) {

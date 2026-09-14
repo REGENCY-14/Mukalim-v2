@@ -115,7 +115,7 @@ export const staggerContainer: Variants = {
   },
 };
 
-/** Put on each child (e.g. `<motion.li variants={staggerItem} />`) — no need to set initial/animate on children. */
+/** Put on each child (e.g. `<motion.li variants={staggerItem} />`), no need to set initial/animate on children. */
 export const staggerItem: Variants = fadeInUp;
 
 // ---------------------------------------------------------------------------
@@ -136,7 +136,7 @@ export const scrollViewport = { once: true, margin: "-80px" } as const;
 export const hoverScale = { scale: 1.03 };
 export const tapScale = { scale: 0.97 };
 
-/** Subtle lift for cards/links — combine with `hoverScale`-style usage if desired. */
+/** Subtle lift for cards/links, combine with `hoverScale`-style usage if desired. */
 export const hoverLift = { y: -4, scale: 1.02 };
 export const tapLift = { y: 0, scale: 0.98 };
 

@@ -2,18 +2,18 @@
 
 /**
  * Real admin auth against the mukalimv2-backend API. The backend is the
- * source of truth via an httpOnly session cookie — this context never reads
+ * source of truth via an httpOnly session cookie, this context never reads
  * or writes storage itself, it just mirrors what the API says:
  *
  * - On mount, `GET /auth/session` tells us whether the cookie the browser
- *   is already holding (if any) is still valid — this is what survives a
+ *   is already holding (if any) is still valid, this is what survives a
  *   page refresh, not localStorage.
  * - `login`/`logout` call the matching endpoints and update local state from
  *   the response; the cookie itself is set/cleared by the backend, invisible
  *   to this code (httpOnly).
  *
  * `status` exists so consumers can tell "haven't checked yet" apart from
- * "checked, and you're logged out" — conflating them would either flash
+ * "checked, and you're logged out", conflating them would either flash
  * real dashboard content before the check resolves, or bounce an
  * already-authenticated visitor to /sign-in for one frame on every refresh.
  */
@@ -29,7 +29,7 @@ export interface AdminSession {
   role: AdminRole;
 }
 
-/** A real seeded demo account (mukalimv2-backend's `db:seed`) — powers the sign-in form's "autofill demo login" shortcut. Password matches the backend's `SEED_DEMO_PASSWORD` default. */
+/** A real seeded demo account (mukalimv2-backend's `db:seed`), powers the sign-in form's "autofill demo login" shortcut. Password matches the backend's `SEED_DEMO_PASSWORD` default. */
 export const DEMO_CREDENTIALS = {
   email: "amara@mukalim.com",
   password: "Password123!",
@@ -77,7 +77,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       .catch(() => {
         // 401 (no/expired session) is the expected case for a logged-out
         // visitor; a network/server error also just means "can't confirm
-        // you're logged in" — either way, treat as unauthenticated rather
+        // you're logged in", either way, treat as unauthenticated rather
         // than leaving the app stuck on "loading" forever.
         if (cancelled) return;
         setSession(null);
@@ -96,7 +96,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       return true;
     } catch (error) {
       if (!(error instanceof ApiError)) throw error;
-      // 401 invalid credentials, or a network/server error — the sign-in
+      // 401 invalid credentials, or a network/server error, the sign-in
       // form shows the same inline message for any of these today.
       return false;
     }
@@ -111,7 +111,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Unlike `login`, lets `ApiError` propagate uncaught — the accept-invite
+  // Unlike `login`, lets `ApiError` propagate uncaught, the accept-invite
   // page needs to distinguish an invalid/expired token (no `details`) from a
   // real Zod validation failure (`details.fieldErrors`) from a rate limit,
   // and a boolean can't carry that.
@@ -121,7 +121,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setStatus("authenticated");
   }, []);
 
-  // Deliberately enumeration-safe on the backend — always 200 with the same
+  // Deliberately enumeration-safe on the backend, always 200 with the same
   // message regardless of whether the email matches an account. No session
   // change here; this only ever sends an email.
   const requestPasswordReset = useCallback(async (email: string): Promise<string> => {

@@ -35,7 +35,7 @@ export default function Hero() {
         aria-hidden="true"
         className="absolute inset-0 bg-gradient-to-t from-brand-ink/75 via-brand-ink/55 to-brand-ink/45 backdrop-blur-[1px]"
       />
-      {/* Focused vignette behind the centered text block — keeps headline contrast
+      {/* Focused vignette behind the centered text block, keeps headline contrast
           readable no matter how bright the underlying photo is. */}
       <div
         aria-hidden="true"

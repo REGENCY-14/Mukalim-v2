@@ -2,7 +2,7 @@
 
 /**
  * Client-side locale state for the language switcher. Deliberately not
- * URL-based (no `/fr` route prefix) — switching is instant and doesn't
+ * URL-based (no `/fr` route prefix), switching is instant and doesn't
  * regenerate the static page tree. Persisted to localStorage.
  *
  * Backed by `useSyncExternalStore` rather than `useState` + a mount effect:
@@ -22,7 +22,7 @@ import {
 import type { Locale } from "./translations";
 
 const STORAGE_KEY = "mukalim-locale";
-/** Same-tab change notification — the native `storage` event only fires in *other* tabs. */
+/** Same-tab change notification, the native `storage` event only fires in *other* tabs. */
 const CHANGE_EVENT = "mukalim-locale-change";
 
 function isLocale(value: string | null): value is Locale {
@@ -55,7 +55,7 @@ function writeLocale(locale: Locale) {
   try {
     window.localStorage.setItem(STORAGE_KEY, locale);
   } catch {
-    // localStorage unavailable (private browsing, etc.) — the dispatched
+    // localStorage unavailable (private browsing, etc.), the dispatched
     // event below still updates the UI for the rest of this session.
   }
   window.dispatchEvent(new Event(CHANGE_EVENT));

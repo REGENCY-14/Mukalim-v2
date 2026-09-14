@@ -5,12 +5,12 @@ import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 import { AdminAuthProvider } from "@/lib/admin/AdminAuthContext";
 import "./globals.css";
 
-// Single site-wide typeface — Playfair Display (the old `font-serif`
+// Single site-wide typeface, Playfair Display (the old `font-serif`
 // headings font) is gone. `font-serif` utility classes throughout the app
 // still work (see globals.css's `@theme inline`), they just resolve to this
 // same variable now rather than a second font family. Weights cover every
-// font-* utility actually used in the codebase (normal/medium/semibold/bold
-// — no font-light or font-black anywhere), so nothing falls back to
+// font-* utility actually used in the codebase (normal/medium/semibold/bold,
+// no font-light or font-black anywhere), so nothing falls back to
 // synthesized/faux bold.
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -19,7 +19,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Mukalim — Discover the World Through Spice",
+  title: "Mukalim, Discover the World Through Spice",
   description:
     "Globally sourced, expertly tested artisanal spices, bringing warmth and culinary authority to your kitchen.",
 };
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${jakarta.variable} h-full antialiased`}
     >
-      {/* min-h-dvh (dynamic viewport height), not min-h-full/100vh — on
+      {/* min-h-dvh (dynamic viewport height), not min-h-full/100vh, on
           mobile, the browser chrome (address bar) collapsing/expanding
           after load shrinks or grows the *real* visible viewport, and a
           100vh-based height doesn't track that, leaving the footer short
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <MotionConfig reducedMotion="user">
           <LocaleProvider>
             {/* Site-wide (not just /admin/*) because the public /sign-in
-                page doubles as the admin dashboard's sign-in — see the note
+                page doubles as the admin dashboard's sign-in, see the note
                 there. */}
             <AdminAuthProvider>{children}</AdminAuthProvider>
           </LocaleProvider>

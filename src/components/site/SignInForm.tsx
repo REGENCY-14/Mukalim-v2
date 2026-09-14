@@ -8,7 +8,7 @@ import { ui } from "@/lib/i18n/translations";
 import { useAdminAuth, DEMO_CREDENTIALS } from "@/lib/admin/AdminAuthContext";
 import EyeIcon from "./EyeIcon";
 
-/** Only ever send the browser to an internal path — never follow an
+/** Only ever send the browser to an internal path, never follow an
  * absolute/protocol-relative `next` value from the URL. */
 function safeRedirectTarget(next: string | null): string {
   if (next && next.startsWith("/") && !next.startsWith("//")) return next;

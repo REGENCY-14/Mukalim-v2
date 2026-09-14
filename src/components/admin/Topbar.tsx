@@ -49,7 +49,7 @@ export default function Topbar({ session, onOpenMobileMenu }: { session: AdminSe
   const notifRef = useClickOutside(() => setNotifOpen(false));
   const userRef = useClickOutside(() => setUserMenuOpen(false));
 
-  // Just clear the session — no navigation call here. The (dashboard)
+  // Just clear the session, no navigation call here. The (dashboard)
   // layout's own guard effect picks up `status === "unauthenticated"` and
   // redirects to `/sign-in?next=<the admin page you were on>`, so there's
   // one source of truth for "where does a logged-out visitor go" instead of
@@ -91,7 +91,7 @@ export default function Topbar({ session, onOpenMobileMenu }: { session: AdminSe
                 exit={{ opacity: 0, y: -6, scale: 0.97 }}
                 transition={microTransition}
                 // Below `md:` the topbar is a cramped mobile cluster
-                // (hamburger + role switcher + bell + avatar all in a row —
+                // (hamburger + role switcher + bell + avatar all in a row, 
                 // see the `md:hidden` menu button above), so anchoring a
                 // fixed 320px-wide panel to the bell's own right edge runs
                 // it off the left edge of the screen. Pin it to the

@@ -51,7 +51,7 @@ export default function TopNavBar() {
         >
           {/* The logo image is a full wordmark lockup (icon + "MUKALIM"
               text), so it's rendered at its native aspect ratio instead of
-              cropped into an icon-sized square — no separate text label
+              cropped into an icon-sized square, no separate text label
               needed alongside it. */}
           <Image
             src="/mukalim/logo.png"
@@ -64,7 +64,7 @@ export default function TopNavBar() {
         </Link>
 
         {/* min-w-0 is required for the overflow-x-auto below to actually
-            scroll rather than overflow the header — a flex item's default
+            scroll rather than overflow the header, a flex item's default
             min-width is `auto` (its content's intrinsic width), which
             otherwise refuses to shrink and pushes the logo/right-side
             controls out instead. A fixed 5-category list never hit this;
@@ -97,7 +97,7 @@ export default function TopNavBar() {
               );
             })}
           </ul>
-          {/* Static edge fade — hints there's more to scroll when the list
+          {/* Static edge fade, hints there's more to scroll when the list
               overflows. Not scroll-position-aware (no JS/scroll listener):
               a category list long enough to overflow this row is rare
               enough that a plain always-on hint is enough, and it costs
@@ -211,7 +211,7 @@ export default function TopNavBar() {
             exit={{ height: 0, opacity: 0 }}
             transition={baseTransition}
             // max-h caps this at the visible viewport below the fixed 88px
-            // header — same unbounded-category-list reasoning as the
+            // header, same unbounded-category-list reasoning as the
             // desktop nav above, just vertical: a long list scrolls inside
             // the panel instead of the panel running off-screen.
             className="max-h-[calc(100dvh-88px)] overflow-x-hidden overflow-y-auto border-t border-brand-line/30 bg-brand-cream xl:hidden"

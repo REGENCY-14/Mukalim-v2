@@ -11,7 +11,7 @@ import ArticleCard from "./ArticleCard";
 
 interface CategoryArticlesProps {
   categorySlug: string;
-  /** Server-fetched (English, no filters) — avoids a network round trip for
+  /** Server-fetched (English, no filters), avoids a network round trip for
    * the common case; see the page component. `null` if that fetch failed. */
   initialArticles: PublicArticleSummary[] | null;
   initialMeta: PublicArticlesMeta | null;
@@ -27,7 +27,7 @@ export default function CategoryArticles({ categorySlug, initialArticles, initia
   const [meta, setMeta] = useState(initialMeta);
 
   // Filtering/sorting is real query params against the backend now
-  // (`?tag=&sort=&letter=`), not client-side array filtering — so every
+  // (`?tag=&sort=&letter=`), not client-side array filtering, so every
   // change here is a fresh fetch. The very first run, for the exact
   // English/no-filters case the server already fetched, reuses that
   // instead of firing a redundant duplicate request.
@@ -73,7 +73,7 @@ export default function CategoryArticles({ categorySlug, initialArticles, initia
   const availableLetters = new Set(meta?.availableLetters ?? []);
   // If narrowing the tag filter makes the previously-selected letter
   // unavailable, the backend's own `availableLetters` (computed after the
-  // tag filter, before the letter filter — same semantics the old
+  // tag filter, before the letter filter, same semantics the old
   // client-side version had) already reflects that; just don't keep a
   // selection the UI can no longer show as active.
   const activeLetter = selectedLetter && availableLetters.has(selectedLetter) ? selectedLetter : null;

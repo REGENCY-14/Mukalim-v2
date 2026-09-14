@@ -4,7 +4,7 @@
   --background: #fef9f1;
   --foreground: #1d1c17;
 
-  /* Mukalim brand palette — single source of truth for the site's colors.
+  /* Mukalim brand palette, single source of truth for the site's colors.
      Referenced via Tailwind utilities like `bg-brand-cream` / `text-brand-brown`. */
   --color-brand-cream: #fef9f1;
   --color-brand-cream-alt: #f8f3eb;
@@ -23,7 +23,7 @@
   --color-brand-banner: #ece8e0;
 
   /* Admin dashboard palette (src/app/admin). Distinct from the public-site
-     tokens above by design brief — reuses brand-brown/brand-gold where the
+     tokens above by design brief, reuses brand-brown/brand-gold where the
      hex values are identical, adds its own cream/terracotta/green/grey. */
   --color-admin-cream: #fbf6ee;
   --color-admin-terracotta: #c1552c;
@@ -56,7 +56,7 @@
   --color-admin-green: var(--color-admin-green);
   --color-admin-warm-grey: var(--color-admin-warm-grey);
 
-  /* Both point at the same font now (Plus Jakarta Sans, site-wide) — kept
+  /* Both point at the same font now (Plus Jakarta Sans, site-wide), kept
      as two tokens rather than collapsing `font-serif` usages across every
      component, since that utility class is used throughout for headings. */
   --font-sans: var(--font-jakarta);
@@ -70,7 +70,7 @@ body {
 }
 
 /* Hides the scrollbar on an internally-scrollable strip (the nav's category
-   list, TopNavBar.tsx) without disabling scrolling itself — the edge-fade
+   list, TopNavBar.tsx) without disabling scrolling itself, the edge-fade
    overlay is the visible "more to scroll" affordance instead. */
 .no-scrollbar {
   scrollbar-width: none;

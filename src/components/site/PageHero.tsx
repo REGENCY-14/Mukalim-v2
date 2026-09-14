@@ -13,7 +13,7 @@ interface PageHeroProps {
 }
 
 /** Shared, shorter banner for static content pages (About, Our Process,
- * Sustainability, Blog & Recipes) — same visual language as the homepage's
+ * Sustainability, Blog & Recipes), same visual language as the homepage's
  * `Hero`, but sized for a page that has real content below it rather than
  * being the entire above-the-fold moment. */
 export default function PageHero({ eyebrow, heading, subtext, image, imageAlt }: PageHeroProps) {
