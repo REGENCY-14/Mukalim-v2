@@ -184,6 +184,27 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                 placeholder="Article body, a plain styled textarea stands in for a rich text editor during the design phase."
                 className={`${inputClass} resize-y font-serif leading-relaxed`}
               />
+              <p className="text-xs text-admin-warm-grey">
+                Supported HTML tags only, everything else is stripped on save:{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">p</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">br</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">strong</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">em</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">u</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">s</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">a</code> (href/title only,
+                http/https/mailto links),{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">ul</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">ol</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">li</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">h2</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">h3</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">h4</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">blockquote</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">code</code>,{" "}
+                <code className="rounded bg-admin-cream px-1 py-0.5">pre</code>. No images, tables,
+                headings above h2, or inline styles/classes.
+              </p>
             </div>
           </div>
 
