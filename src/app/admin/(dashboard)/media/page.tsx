@@ -131,7 +131,7 @@ export default function MediaPage() {
         </div>
       </div>
 
-      {editable && <MediaUploadZone onFiles={handleUpload} />}
+      {editable && <MediaUploadZone onFiles={handleUpload} onRejected={setActionError} />}
       {uploading && <p className="text-sm text-admin-warm-grey">Uploading…</p>}
 
       <div className="flex flex-wrap gap-3">

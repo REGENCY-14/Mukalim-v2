@@ -7,6 +7,12 @@ import type { Language, LocalizedText } from "@/lib/admin/types";
 import { emptyLocalizedText } from "@/lib/admin/types";
 import { createCategory, updateCategory, uploadMedia, type AdminCategory } from "@/lib/admin/api";
 import { ApiError, isBackendMediaUrl, resolveMediaUrl } from "@/lib/api/client";
+import {
+  ACCEPTED_IMAGE_ACCEPT,
+  ACCEPTED_IMAGE_LABEL,
+  REJECTED_FILE_TYPE_MESSAGE,
+  isAcceptedImageType,
+} from "@/lib/admin/mediaTypes";
 import SlideOver from "./SlideOver";
 import LanguageTabs from "./LanguageTabs";
 
@@ -58,6 +64,10 @@ export default function CategoryFormPanel({ open, onClose, category, onSaved }: 
     const file = event.target.files?.[0];
     event.target.value = ""; // allow re-selecting the same file later
     if (!file) return;
+    if (!isAcceptedImageType(file)) {
+      setError(REJECTED_FILE_TYPE_MESSAGE);
+      return;
+    }
     setUploadingIcon(true);
     setError(null);
     try {
@@ -154,9 +164,9 @@ export default function CategoryFormPanel({ open, onClose, category, onSaved }: 
               <Upload className="size-4" />
               {uploadingIcon ? "Uploading…" : "Upload image"}
             </button>
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+            <input ref={fileInputRef} type="file" accept={ACCEPTED_IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
           </div>
-          <p className="text-xs text-admin-warm-grey">PNG, JPG, WebP, GIF, or SVG, 10MB max.</p>
+          <p className="text-xs text-admin-warm-grey">{ACCEPTED_IMAGE_LABEL}, 10MB max.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

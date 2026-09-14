@@ -15,6 +15,12 @@ import {
   type AdminCategory,
 } from "@/lib/admin/api";
 import { ApiError, isBackendMediaUrl, resolveMediaUrl } from "@/lib/api/client";
+import {
+  ACCEPTED_IMAGE_ACCEPT,
+  ACCEPTED_IMAGE_LABEL,
+  REJECTED_FILE_TYPE_MESSAGE,
+  isAcceptedImageType,
+} from "@/lib/admin/mediaTypes";
 import Breadcrumbs from "./Breadcrumbs";
 import LanguageTabs from "./LanguageTabs";
 import Select from "./Select";
@@ -85,6 +91,10 @@ export default function ContentEditor({ item }: ContentEditorProps) {
     const file = event.target.files?.[0];
     event.target.value = ""; // allow re-selecting the same file later
     if (!file) return;
+    if (!isAcceptedImageType(file)) {
+      setError(REJECTED_FILE_TYPE_MESSAGE);
+      return;
+    }
     setUploadingImage(true);
     setError(null);
     try {
@@ -265,8 +275,8 @@ export default function ContentEditor({ item }: ContentEditorProps) {
                 <ImagePlus className="size-4" />
                 {uploadingImage ? "Uploading…" : "Replace image"}
               </button>
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-              <p className="text-xs text-admin-warm-grey">PNG, JPG, WebP, GIF, or SVG, 10MB max.</p>
+              <input ref={fileInputRef} type="file" accept={ACCEPTED_IMAGE_ACCEPT} onChange={handleFileChange} className="hidden" />
+              <p className="text-xs text-admin-warm-grey">{ACCEPTED_IMAGE_LABEL}, 10MB max.</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
