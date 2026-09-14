@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { usePublicCategories } from "@/lib/site/PublicCategoriesContext";
 import { useLocale } from "@/lib/i18n/LocaleContext";
@@ -44,13 +45,13 @@ export default function Footer() {
           </h4>
           <ul className="flex flex-col gap-4">
             {t.footer.quickLinks.map((item) => (
-              <li key={item}>
-                <a
-                  href="#"
+              <li key={item.href}>
+                <Link
+                  href={item.href}
                   className="text-base text-brand-off-white/80 opacity-90 transition-opacity hover:opacity-100"
                 >
-                  {item}
-                </a>
+                  {item.label}
+                </Link>
               </li>
             ))}
           </ul>

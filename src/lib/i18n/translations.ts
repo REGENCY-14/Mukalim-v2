@@ -68,7 +68,12 @@ export const ui = {
       description:
         "Discover the world through globally sourced, expertly tested artisanal spices. Bringing warmth and culinary authority to your kitchen.",
       quickLinksHeading: "Quick Links",
-      quickLinks: ["About Us", "Our Process", "Sustainability", "Blog & Recipes"],
+      quickLinks: [
+        { label: "About Us", href: "/about" },
+        { label: "Our Process", href: "/our-process" },
+        { label: "Sustainability", href: "/sustainability" },
+        { label: "Blog & Recipes", href: "/blog" },
+      ],
       categoriesHeading: "Categories",
       contactHeading: "Contact Info",
       // No hardcoded year — Footer.tsx prepends the current year at render
@@ -168,6 +173,105 @@ export const ui = {
       backToSignIn: "Back to sign in",
       requestNewLink: "Request a new reset link",
     },
+    aboutPage: {
+      eyebrow: "Our Story",
+      heading: "Rooted in Tradition, Refined by Science",
+      subtext:
+        "Mukalim began with a simple belief: the best ingredients come from people who've spent generations perfecting them, not from a shortcut.",
+      storyEyebrow: "How We Started",
+      storyHeading: "From Traditional Markets to Your Kitchen",
+      storyParagraphs: [
+        "Mukalim was founded by a small group of food scientists and traders who kept running into the same problem: the spices, botanicals, and wellness ingredients that carried the deepest flavor and richest tradition rarely came with any way to verify their quality.",
+        "So we built the bridge ourselves — traveling to the terroir where each ingredient is genuinely at its best, partnering directly with the growers and artisans who've worked that land for generations, and putting every batch through the same rigorous testing a pharmaceutical lab would use.",
+        "Today, that's still the whole model: real relationships upstream, real rigor downstream, and nothing in between pretending to be something it isn't.",
+      ],
+      valuesHeading: "What We Stand For",
+      values: [
+        {
+          title: "Authenticity",
+          description: "Every ingredient is traceable to its actual origin — no blending away where something came from.",
+        },
+        {
+          title: "Rigor",
+          description: "Organoleptic testing and third-party panel review on every batch, not a sample of them.",
+        },
+        {
+          title: "Partnership",
+          description: "Long-term relationships with growers, not one-off purchase orders that vanish after harvest.",
+        },
+        {
+          title: "Craft",
+          description: "Traditional processing methods, preserved rather than replaced, wherever they produce the better result.",
+        },
+      ],
+    },
+    processPage: {
+      eyebrow: "Our Process",
+      heading: "How an Ingredient Earns the Mukalim Name",
+      subtext: "Four stages stand between a raw harvest and anything we're willing to put our name on.",
+      steps: [
+        {
+          number: "01",
+          title: "Sourcing",
+          description:
+            "We travel to the specific terroir where each botanical genuinely thrives, building direct, long-term relationships with the growers and traditional processors who know it best — not buying through anonymous intermediaries.",
+        },
+        {
+          number: "02",
+          title: "Organoleptic Testing",
+          description:
+            "Master tasters evaluate every batch for flavor profile, aroma intensity, and consistency — the same sensory rigor used in fine wine and coffee grading, applied here to spices and botanicals.",
+        },
+        {
+          number: "03",
+          title: "Panel Certification",
+          description:
+            "Independent culinary and safety panels verify purity and potency against international standards before anything is cleared for packaging.",
+        },
+        {
+          number: "04",
+          title: "Packaging & Delivery",
+          description:
+            "Sealed at peak freshness and shipped in packaging designed to protect volatile oils and aromatics — the same care that went into sourcing shouldn't be undone in transit.",
+        },
+      ],
+    },
+    sustainabilityPage: {
+      eyebrow: "Sustainability",
+      heading: "Our Commitment to the Land and the People on It",
+      subtext:
+        "Quality ingredients and sustainable practices aren't a trade-off for us — the traditional growers we work with have farmed this way for generations because it's what keeps the land productive.",
+      commitmentsHeading: "Where We Draw the Line",
+      commitments: [
+        {
+          title: "Direct Farmer Partnerships",
+          description:
+            "We pay growers directly and consistently across seasons, not through intermediaries who compress margins at the source.",
+        },
+        {
+          title: "Traditional & Regenerative Farming",
+          description:
+            "We prioritize partners using crop rotation, intercropping, and other traditional practices that keep soil healthy without synthetic inputs.",
+        },
+        {
+          title: "Responsible Packaging",
+          description:
+            "Recyclable and reusable packaging wherever the product's shelf life and freshness requirements allow it.",
+        },
+        {
+          title: "Fair Labor Standards",
+          description:
+            "Every sourcing partnership is vetted against fair labor practices before a single order is placed — no exceptions for price.",
+        },
+      ],
+    },
+    blogPage: {
+      eyebrow: "Blog & Recipes",
+      heading: "Stories From the Source",
+      subtext: "Real articles from our library — the same ones behind each ingredient category, gathered in one place.",
+      emptyState: "No articles are published yet — check back soon.",
+      viewCategory: "View category",
+    },
   },
   fr: {
     signIn: "Connexion",
@@ -208,7 +312,12 @@ export const ui = {
       description:
         "Découvrez le monde à travers des épices artisanales sourcées mondialement et rigoureusement testées. Apportant chaleur et autorité culinaire à votre cuisine.",
       quickLinksHeading: "Liens Rapides",
-      quickLinks: ["À Propos", "Notre Processus", "Durabilité", "Blog et Recettes"],
+      quickLinks: [
+        { label: "À Propos", href: "/about" },
+        { label: "Notre Processus", href: "/our-process" },
+        { label: "Durabilité", href: "/sustainability" },
+        { label: "Blog et Recettes", href: "/blog" },
+      ],
       categoriesHeading: "Catégories",
       contactHeading: "Coordonnées",
       copyright: "MUKALIM. Tous droits réservés.",
@@ -305,6 +414,105 @@ export const ui = {
       invalidTokenTitle: "Lien de réinitialisation invalide",
       backToSignIn: "Retour à la connexion",
       requestNewLink: "Demander un nouveau lien de réinitialisation",
+    },
+    aboutPage: {
+      eyebrow: "Notre Histoire",
+      heading: "Ancrés dans la Tradition, Perfectionnés par la Science",
+      subtext:
+        "Mukalim est né d'une conviction simple : les meilleurs ingrédients viennent de personnes qui ont passé des générations à les perfectionner, pas d'un raccourci.",
+      storyEyebrow: "Comment Tout a Commencé",
+      storyHeading: "Des Marchés Traditionnels à Votre Cuisine",
+      storyParagraphs: [
+        "Mukalim a été fondée par un petit groupe de scientifiques alimentaires et de commerçants confrontés au même problème : les épices, plantes et ingrédients de bien-être porteurs de la saveur la plus riche et de la tradition la plus profonde n'offraient presque jamais de moyen de vérifier leur qualité.",
+        "Nous avons donc construit ce pont nous-mêmes — en voyageant vers le terroir où chaque ingrédient est réellement à son meilleur, en établissant des partenariats directs avec les producteurs et artisans qui travaillent cette terre depuis des générations, et en soumettant chaque lot aux mêmes tests rigoureux qu'utiliserait un laboratoire pharmaceutique.",
+        "Aujourd'hui, le modèle reste le même : de vraies relations en amont, une vraie rigueur en aval, et rien entre les deux qui prétende être autre chose que ce qu'il est.",
+      ],
+      valuesHeading: "Ce en Quoi Nous Croyons",
+      values: [
+        {
+          title: "Authenticité",
+          description: "Chaque ingrédient est traçable jusqu'à son origine réelle — aucun mélange qui dissimule sa provenance.",
+        },
+        {
+          title: "Rigueur",
+          description: "Tests organoleptiques et examen par un panel tiers sur chaque lot, pas seulement un échantillon.",
+        },
+        {
+          title: "Partenariat",
+          description: "Des relations à long terme avec les producteurs, pas des commandes ponctuelles qui disparaissent après la récolte.",
+        },
+        {
+          title: "Savoir-faire",
+          description: "Des méthodes de transformation traditionnelles, préservées plutôt que remplacées, partout où elles donnent le meilleur résultat.",
+        },
+      ],
+    },
+    processPage: {
+      eyebrow: "Notre Processus",
+      heading: "Comment un Ingrédient Mérite le Nom Mukalim",
+      subtext: "Quatre étapes séparent une récolte brute de tout ce que nous sommes prêts à associer à notre nom.",
+      steps: [
+        {
+          number: "01",
+          title: "Approvisionnement",
+          description:
+            "Nous voyageons vers le terroir spécifique où chaque plante s'épanouit réellement, en établissant des relations directes et durables avec les producteurs et transformateurs traditionnels qui la connaissent le mieux — jamais par des intermédiaires anonymes.",
+        },
+        {
+          number: "02",
+          title: "Tests Organoleptiques",
+          description:
+            "Des maîtres goûteurs évaluent chaque lot selon le profil aromatique, l'intensité et la constance — la même rigueur sensorielle utilisée pour noter les grands vins et cafés, appliquée ici aux épices et plantes.",
+        },
+        {
+          number: "03",
+          title: "Certification par Panel",
+          description:
+            "Des panels culinaires et de sécurité indépendants vérifient la pureté et la puissance selon les normes internationales avant tout conditionnement.",
+        },
+        {
+          number: "04",
+          title: "Conditionnement et Livraison",
+          description:
+            "Scellés à fraîcheur maximale et expédiés dans un emballage conçu pour protéger les huiles volatiles et arômes — le soin apporté à l'approvisionnement ne doit pas être défait en transit.",
+        },
+      ],
+    },
+    sustainabilityPage: {
+      eyebrow: "Durabilité",
+      heading: "Notre Engagement envers la Terre et Ceux Qui la Cultivent",
+      subtext:
+        "Ingrédients de qualité et pratiques durables ne sont pas un compromis pour nous — les producteurs traditionnels avec qui nous travaillons cultivent ainsi depuis des générations, car c'est ce qui maintient la terre productive.",
+      commitmentsHeading: "Nos Limites Non Négociables",
+      commitments: [
+        {
+          title: "Partenariats Directs avec les Producteurs",
+          description:
+            "Nous payons les producteurs directement et de façon constante d'une saison à l'autre, sans intermédiaires qui compriment les marges à la source.",
+        },
+        {
+          title: "Agriculture Traditionnelle et Régénératrice",
+          description:
+            "Nous privilégions les partenaires utilisant la rotation des cultures, la culture associée et d'autres pratiques traditionnelles qui maintiennent un sol sain sans intrants synthétiques.",
+        },
+        {
+          title: "Emballage Responsable",
+          description:
+            "Emballages recyclables et réutilisables partout où la durée de conservation et la fraîcheur du produit le permettent.",
+        },
+        {
+          title: "Normes de Travail Équitables",
+          description:
+            "Chaque partenariat d'approvisionnement est vérifié selon des normes de travail équitables avant toute commande — sans exception pour le prix.",
+        },
+      ],
+    },
+    blogPage: {
+      eyebrow: "Blog et Recettes",
+      heading: "Histoires Venues de la Source",
+      subtext: "De vrais articles de notre bibliothèque — les mêmes qui accompagnent chaque catégorie d'ingrédients, réunis ici.",
+      emptyState: "Aucun article n'est encore publié — revenez bientôt.",
+      viewCategory: "Voir la catégorie",
     },
   },
 } as const;

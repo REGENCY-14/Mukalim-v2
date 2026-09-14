@@ -115,3 +115,37 @@ export function getPublicArticle(
 export function isNotFoundError(err: unknown): boolean {
   return err instanceof ApiError && err.status === 404;
 }
+
+export interface PublicArticleSummaryWithCategory extends PublicArticleSummary {
+  categorySlug: string;
+}
+
+/**
+ * Real published articles across every category, newest first — powers the
+ * "Blog & Recipes" footer link. There's no single cross-category articles
+ * endpoint on the backend, so this fans out one `listPublicArticles` call
+ * per category (each already scoped to `status = 'published'`) and merges
+ * client/server-side. A failed category is dropped rather than failing the
+ * whole page — matches the same "degrade, don't crash" approach as
+ * `listPublicCategories`'s callers.
+ */
+export async function listRecentArticles(
+  locale: PublicLocale = "en",
+  { perCategory = 4, take = 9 }: { perCategory?: number; take?: number } = {},
+): Promise<PublicArticleSummaryWithCategory[]> {
+  const { data: categories } = await listPublicCategories(locale);
+  const perCategoryResults = await Promise.all(
+    categories.map(async (category) => {
+      try {
+        const { data } = await listPublicArticles(category.slug, { locale, sort: "newest", limit: perCategory });
+        return data.map((article) => ({ ...article, categorySlug: category.slug }));
+      } catch {
+        return [];
+      }
+    }),
+  );
+  return perCategoryResults
+    .flat()
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    .slice(0, take);
+}
