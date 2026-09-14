@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "@/lib/i18n/LocaleContext";
 import { ui } from "@/lib/i18n/translations";
@@ -75,9 +76,9 @@ export default function SignInForm() {
           <label htmlFor={passwordId} className="text-xs font-medium tracking-[1px] text-brand-brown-deep uppercase">
             {t.passwordLabel}
           </label>
-          <a href="#" className="text-xs text-brand-rust transition-colors hover:underline">
+          <Link href="/forgot-password" className="text-xs text-brand-rust transition-colors hover:underline">
             {t.forgotPassword}
-          </a>
+          </Link>
         </div>
         <div className="relative">
           <input

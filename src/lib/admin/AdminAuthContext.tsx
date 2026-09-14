@@ -47,6 +47,8 @@ interface AdminAuthContextValue {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   acceptInvite: (token: string, password: string) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<string>;
+  resetPassword: (token: string, password: string) => Promise<void>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextValue>({
@@ -55,6 +57,8 @@ const AdminAuthContext = createContext<AdminAuthContextValue>({
   login: async () => false,
   logout: async () => {},
   acceptInvite: async () => {},
+  requestPasswordReset: async () => "",
+  resetPassword: async () => {},
 });
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
@@ -117,8 +121,27 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setStatus("authenticated");
   }, []);
 
+  // Deliberately enumeration-safe on the backend — always 200 with the same
+  // message regardless of whether the email matches an account. No session
+  // change here; this only ever sends an email.
+  const requestPasswordReset = useCallback(async (email: string): Promise<string> => {
+    const { message } = await api.post<{ message: string }>("/auth/forgot-password", { email });
+    return message;
+  }, []);
+
+  // Same shape as acceptInvite: lets ApiError propagate so the reset-password
+  // page can distinguish an invalid/expired token from a real validation
+  // failure or a rate limit.
+  const resetPassword = useCallback(async (token: string, password: string): Promise<void> => {
+    const { user } = await api.post<SessionResponse>("/auth/reset-password", { token, password });
+    setSession(user);
+    setStatus("authenticated");
+  }, []);
+
   return (
-    <AdminAuthContext.Provider value={{ session, status, login, logout, acceptInvite }}>
+    <AdminAuthContext.Provider
+      value={{ session, status, login, logout, acceptInvite, requestPasswordReset, resetPassword }}
+    >
       {children}
     </AdminAuthContext.Provider>
   );
